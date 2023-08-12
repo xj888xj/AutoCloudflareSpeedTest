@@ -1,7 +1,82 @@
 @echo off
 setlocal enabledelayedexpansion
-rem 程序运行目录，绝对目录
-cd C:\Users\aplomb\Desktop\gcore_speed
+
+REM 检查目录下是否存在 CloudflareST.exe
+if not exist "CloudflareST.exe" (
+echo CloudflareST.exe 未准备就绪
+	goto :DownloadCloudflareST
+) else (
+echo CloudflareST.exe 准备就绪
+    goto :curl
+)
+
+:DownloadCloudflareST
+REM 设置 GitHub 仓库信息
+set "githubRepoOwner=XIU2"
+set "githubRepoName=CloudflareSpeedTest"
+
+REM 使用 PowerShell 获取 GitHub API 数据并解析 JSON
+for /f "usebackq tokens=*" %%a in (`powershell -command "(Invoke-WebRequest -Uri 'https://api.github.com/repos/%githubRepoOwner%/%githubRepoName%/releases/latest' | ConvertFrom-Json).tag_name" 2^>nul`) do (
+    set "latestVersion=%%~a"
+    goto :gotVersion
+)
+
+:gotVersion
+REM 输出获取到的最新版本号
+if not "%latestVersion%"=="" (
+    echo 最新的版本号为：%latestVersion%
+) else (
+    echo 无法获取最新的版本号。
+    pause
+    exit /b
+)
+
+REM 构建下载链接和文件名
+set "downloadUrl=https://ghproxy.com/https://github.com/%githubRepoOwner%/%githubRepoName%/releases/download/%latestVersion%/CloudflareST_windows_amd64.zip"
+set "zipFileName=CloudflareST_windows_amd64.zip"
+REM 使用 PowerShell 下载 ZIP 文件
+powershell -command "(New-Object System.Net.WebClient).DownloadFile('%downloadUrl%', '%zipFileName%')"
+REM 使用 PowerShell 解压 ZIP 文件
+powershell -command "Expand-Archive -Path '%zipFileName%' -DestinationPath '.' -Force"
+REM 删除下载的 ZIP 文件
+del "%zipFileName%"
+
+:curl
+REM 检查目录下是否存在 curl.exe
+if not exist ".\curl\curl-8.2.1_5-win64-mingw\bin\curl.exe" (
+echo curl.exe 未准备就绪
+    goto :Downloadcurl
+) else (
+echo curl.exe 准备就绪
+    goto :start
+)
+
+:Downloadcurl
+REM 设置下载文件和目录的名称 https://curl.se/windows/dl-8.2.1_5/curl-8.2.1_5-win64-mingw.zip
+set downloadUrl=https://downloadcurl.cmliu.net/
+set downloadFileName=curl.zip
+set extractToDirectory=curl
+
+REM 删除目标目录下的所有内容
+if exist "%extractToDirectory%" (
+    echo 正在删除目录 "%extractToDirectory%" 中的所有内容...
+    rmdir /s /q "%extractToDirectory%"
+)
+
+REM 创建目标目录
+mkdir "%extractToDirectory%"
+REM 下载文件
+echo 正在下载文件...
+powershell -NonInteractive -command "& { (New-Object Net.WebClient).DownloadFile('%downloadUrl%', '%downloadFileName%') }"
+REM 解压文件
+echo 正在解压文件...
+powershell -NonInteractive -command "& { Expand-Archive -Path '%downloadFileName%' -DestinationPath '%extractToDirectory%' }"
+REM 清理临时文件
+del "%downloadFileName%"
+echo      curl.exe 准备就绪
+
+:start
+
 rem 你的CloudFlare注册账户邮箱
 set auth_email=xxxxx@gmail.com
 rem 你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。
@@ -17,8 +92,9 @@ set record_type=A
 for /F %%I in ('.\curl\bin\curl.exe --silent http://4.ipw.cn') do set PUBLIC_IP=%%I
 echo '请确认该机器没有通过代理，你的IP地址是：'%PUBLIC_IP%
 echo '欢迎关注youtuber小道笔记：https://www.youtube.com/channel/UCfSvDIQ8D_Zz62oAd5mcDDg'
+set /a record_count+=1
 
-CloudflareST.exe -p 0
+CloudflareST.exe -url https://cs.cmliussss.link -p 0
 for /F %%I in ('.\curl\bin\curl.exe -X GET "https://api.cloudflare.com/client/v4/zones?name=%zone_name%" -H "X-Auth-Email: %auth_email%" -H "X-Auth-Key: %auth_key%" -H "Content-Type: application/json"') do set zone_identifier=%%I
 echo zone_id:%zone_identifier:~18,32%
 
