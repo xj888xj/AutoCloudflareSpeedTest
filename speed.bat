@@ -1,10 +1,24 @@
 @echo off
 setlocal enabledelayedexpansion
 
+rem 你的CloudFlare注册账户邮箱
+set auth_email=xxxxx@gmail.com
+rem 你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。
+set auth_key=xxxxxxxxxxxxxx
+rem #修改为你的主域名
+set zone_name=mcetf.eu.org
+rem 自动更新的二级域名前缀,例如cloudflare的cdn用cl，gcore的cdn用gcore，后面是数字，程序会自动添加。
+set record_name=gcore
+rem 二级域名个数，例如配置5个，则域名分别是cl1、cl2、cl3、cl4、cl5.   后面的信息均不需要修改，让他自动运行就好了。
+set record_count=5
+set record_type=A
+set DNS=119.29.29.29
+
+
 REM 检查目录下是否存在 CloudflareST.exe
 if not exist "CloudflareST.exe" (
 echo CloudflareST.exe 未准备就绪
-	goto :DownloadCloudflareST
+    goto :DownloadCloudflareST
 ) else (
 echo CloudflareST.exe 准备就绪
     goto :curl
@@ -77,24 +91,74 @@ echo      curl.exe 准备就绪
 
 :start
 
-rem 你的CloudFlare注册账户邮箱
-set auth_email=xxxxx@gmail.com
-rem 你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。
-set auth_key=xxxxxxxxxxxxxx
-rem #修改为你的主域名
-set zone_name=mcetf.eu.org
-rem 自动更新的二级域名前缀,例如cloudflare的cdn用cl，gcore的cdn用gcore，后面是数字，程序会自动添加。
-set record_name=gcore
-rem 二级域名个数，例如配置5个，则域名分别是cl1、cl2、cl3、cl4、cl5.   后面的信息均不需要修改，让他自动运行就好了。
-set record_count=5
-set record_type=A
+set record_count_dns=%record_count%
+set OutputFile=ip0.txt
+set Cycles=%record_count_dns%
+
+set FILE=ip.txt
+if not exist %FILE% (
+    echo 173.245.48.0/20 >> %FILE%
+    echo 103.21.244.0/22 >> %FILE%
+    echo 103.22.200.0/22 >> %FILE%
+    echo 103.31.4.0/22 >> %FILE%
+    echo 141.101.64.0/18 >> %FILE%
+    echo 108.162.192.0/18 >> %FILE%
+    echo 190.93.240.0/20 >> %FILE%
+    echo 188.114.96.0/20 >> %FILE%
+    echo 197.234.240.0/22 >> %FILE%
+    echo 198.41.128.0/17 >> %FILE%
+    echo 162.158.0.0/15 >> %FILE%
+    echo 104.16.0.0/12 >> %FILE%
+    echo 172.64.0.0/17 >> %FILE%
+    echo 172.64.128.0/18 >> %FILE%
+    echo 172.64.192.0/19 >> %FILE%
+    echo 172.64.224.0/22 >> %FILE%
+    echo 172.64.229.0/24 >> %FILE%
+    echo 172.64.230.0/23 >> %FILE%
+    echo 172.64.232.0/21 >> %FILE%
+    echo 172.64.240.0/21 >> %FILE%
+    echo 172.64.248.0/21 >> %FILE%
+    echo 172.65.0.0/16 >> %FILE%
+    echo 172.66.0.0/16 >> %FILE%
+    echo 172.67.0.0/16 >> %FILE%
+    echo 131.0.72.0/22 >> %FILE%
+)
+if exist ip0.txt (
+    del ip0.txt 
+)
+copy ip.txt ip0.txt
+echo.>> ip0.txt
+
+for /l %%i in (1,1,%Cycles%) do (
+    set DomainName=%record_name%%%i.%zone_name%
+    
+    rem 使用 nslookup 解析域名，并将结果写入临时文件
+    echo !DomainName!
+    nslookup !DomainName! %DNS% | find "Address:" > temp.txt
+    
+    rem 从临时文件中提取并整理 IP 地址，并追加写入到输出文件
+    for /f "tokens=2 delims=: " %%a in (temp.txt) do (
+        echo %%a | findstr /v %DNS% >> %OutputFile%
+    )
+    
+    rem 清空临时文件内容
+    echo. > temp.txt
+    
+    rem 将 record_count_dns 减 1
+    set /a record_count_dns-=1
+)
+
+echo 解析结果已追加写入 %OutputFile%
+rem pause
+rem 删除临时文件
+del temp.txt
 
 for /F %%I in ('.\curl\curl-8.2.1_5-win64-mingw\bin\curl.exe --silent http://4.ipw.cn') do set PUBLIC_IP=%%I
 echo '请确认该机器没有通过代理，你的IP地址是：'%PUBLIC_IP%
-echo '欢迎关注youtuber小道笔记：https://www.youtube.com/channel/UCfSvDIQ8D_Zz62oAd5mcDDg'
+echo '欢迎关注原作者youtuber小道笔记
 set /a record_count+=1
 
-CloudflareST.exe -url https://cs.cmliussss.link -p 0
+CloudflareST.exe -url https://cs.cmliussss.link -f ip0.txt -dn 20 -tl 200 -p 0
 for /F %%I in ('.\curl\curl-8.2.1_5-win64-mingw\bin\curl.exe -X GET "https://api.cloudflare.com/client/v4/zones?name=%zone_name%" -H "X-Auth-Email: %auth_email%" -H "X-Auth-Key: %auth_key%" -H "Content-Type: application/json"') do set zone_identifier=%%I
 echo zone_id:%zone_identifier:~18,32%
 
@@ -116,3 +180,5 @@ for /f "tokens=1 delims=," %%i in (result.csv) do (
 	)
 )
 :END
+rem 删除临时文件
+del ip0.txt
