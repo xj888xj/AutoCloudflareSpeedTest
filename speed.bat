@@ -16,11 +16,13 @@ rem 解析域名IP，尽量使用公网DNS，避免内网FAKEIP污染
 set DNS=119.29.29.29
 rem 自定义测速地址，可以参考@科技KKK视频制作自己专属的测速链接，避免拥挤造成的测速不准。https://www.youtube.com/watch?v=x1RFegiu0tU&t=271s
 set speedurl="https://cs.cmliussss.link"
+rem 自定义测速队列，默认设置为配置域名数的8倍
+set /a "speedqueue=%record_count% * 8"
 
 REM 检查目录下是否存在 CloudflareST.exe
 if not exist "CloudflareST.exe" (
 echo CloudflareST.exe 未准备就绪
-	goto :DownloadCloudflareST
+    goto :DownloadCloudflareST
 ) else (
 echo CloudflareST.exe 准备就绪
     goto :curl
@@ -199,7 +201,7 @@ echo 请确认该机器没有通过代理，你的IP地址是：%PUBLIC_IP%
 echo 脚本改自@小道笔记：https://www.youtube.com/channel/UCfSvDIQ8D_Zz62oAd5mcDDg
 set /a record_count+=1
 
-CloudflareST.exe -url %speedurl% -f ip0.txt -dn 20 -tl 200 -p 0
+CloudflareST.exe -url %speedurl% -f ip0.txt -dn %speedqueue% -tl 200 -p 0
 for /F %%I in ('.\curl\curl-8.2.1_5-win64-mingw\bin\curl.exe -X GET "https://api.cloudflare.com/client/v4/zones?name=%zone_name%" -H "X-Auth-Email: %auth_email%" -H "X-Auth-Key: %auth_key%" -H "Content-Type: application/json"') do set zone_identifier=%%I
 echo zone_id:%zone_identifier:~18,32%
 
