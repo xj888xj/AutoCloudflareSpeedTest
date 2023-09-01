@@ -275,8 +275,8 @@ echo "$record_name0 地区IP文件 $ip_txt 存在"
 echo "$record_name $record_count $zone_name $port $speedurl"
 echo '你的IP地址是'$(curl 4.ipw.cn)',请确认为本机未经过代理的地址'
 
-#./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
-./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -p 0 -o $result_csv
+#./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 10 -o "log/HK.csv"
+./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -p $record_count -o $result_csv
 
 record_type="A"     
 #获取zone_id、record_id
