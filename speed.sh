@@ -130,6 +130,7 @@ if [ $current_attempt -gt $max_attempts ]; then
     exit 1
 fi
 
+upip(){
 # 检测temp文件夹是否存在
 if [ -d "temp" ]; then
     echo "开始清理IP临时文件..."
@@ -221,8 +222,36 @@ echo "正在将IP按国家代码保存到ip文件夹内..."
 
     echo "IP已按国家分类保存到ip文件夹内。"
 else
-    echo "ip.txt文件不存在。"
-	
+    echo "ip.txt文件不存在，脚本终止。"
+    exit 1
+fi
+}
+
+# 检查ip.txt文件是否存在
+if [ -e "ip.txt" ]; then
+    # 获取ip.txt文件的最后编辑时间戳
+    file_timestamp=$(stat -c %Y ip.txt)
+
+    # 获取当前时间戳
+    current_timestamp=$(date +%s)
+
+    # 计算时间差（以秒为单位）
+    time_diff=$((current_timestamp - file_timestamp))
+
+    # 将6小时转换为秒
+    eight_hours_in_seconds=$((6 * 3600))
+
+    # 如果时间差小于6小时
+    if [ "$time_diff" -lt "$eight_hours_in_seconds" ]; then
+        # 继续执行后续脚本逻辑
+        echo "ip.txt文件已是最新版本，无需更新"
+    else
+        echo "ip.txt文件已过期，开始更新整合IP库"
+	upip
+    fi
+else
+    echo "ip.txt文件不存在，开始更新整合IP库"
+    upip
 fi
 
 if [ ! -d "log" ]; then
@@ -232,34 +261,34 @@ fi
 #带有地区参数，将赋值第1参数为地区
 if [ -n "$1" ]; then 
     record_name="$1"
-	echo "地区 $1"
+    echo "地区 $1"
 fi
 
 #带有二级域名个数参数，将赋值第2参数为端口
 if [ -n "$2" ]; then
     record_count="$2"
-	echo "获取域名数量 $2"
+    echo "获取域名数量 $2"
 fi
 speedqueue=$((record_count * 32)) #自定义测速队列，默认设置为配置域名数的16倍
 
 #带有域名参数，将赋值第3参数为地区
 if [ -n "$3" ]; then 
     zone_name="$3"
-	echo "域名 $3"
+    echo "域名 $3"
 fi
 
 #带有端口参数，将赋值第4参数为端口
 if [ -n "$4" ]; then
     port="$4"
-	echo "测速端口 $4"
+    echo "测速端口 $4"
 fi
 
 #带有自定义测速地址参数，将赋值第5参数为自定义测速地址
 if [ -n "$5" ]; then
     speedurl="$5"
-	echo "自定义测速地址 $5"
+    echo "自定义测速地址 $5"
 else
-	echo "使用默认测速地址 $speedurl"
+    echo "使用默认测速地址 $speedurl"
 fi
 
 record_name0="${record_name^^}"
@@ -272,7 +301,7 @@ if [ ! -f "$ip_txt" ]; then
 fi
 
 echo "$record_name0 地区IP文件 $ip_txt 存在"
-echo "$record_name $record_count $zone_name $port $speedurl"
+echo "待处理域名 ${record_name}[1-${record_count}].${zone_name}:${port}"
 echo '你的IP地址是'$(curl 4.ipw.cn)',请确认为本机未经过代理的地址'
 
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 10 -o "log/HK.csv"
