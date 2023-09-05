@@ -217,7 +217,7 @@ if [ -f "ip-${port}.txt" ]; then
 	# 检测ip文件夹是否存在
 	if [ -d "ip" ]; then
 		echo "开始清理IP地区文件"
-		rm -r "ip"/*
+		rm -r "ip"/*-${port}.txt
 		echo "清理IP地区文件完成。"
 	else
 		echo "创建IP地区文件。"
