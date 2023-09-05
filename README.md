@@ -1,5 +1,5 @@
 # AutoCloudflareSpeedTest
-白嫖总得来说不好，项目热度太高就删库
+白嫖总得来说不好，请不要公开传播，项目热度太高就删库
 ## 测速IP后将IP更新至CloudFlare域名A记录
 测试运行环境ubuntu-18.04-standard_18.04.1-1_amd64
 
