@@ -1,51 +1,63 @@
 #!/bin/bash
+# $ ./speed.sh hk 443 4 xxxx.com xxxx@gmail.com xxxxxxxxxxxxxxx https://vipcs.cloudflarest.link
 export LANG=zh_CN.UTF-8
 auth_email="xxxx@gmail.com"    #你的CloudFlare注册账户邮箱 *必填
 auth_key="xxxxxxxxxxxxxxx"   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
 zone_name="xxxx.com"     #你的主域名 *必填
 
-record_name="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
-record_count=4 #二级域名个数，例如配置4个，则域名分别是hk1、hk2、hk3、hk4.   后面的信息均不需要修改，让他自动运行就好了。
-port=443 #自定义测速端口
+area_GEC="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
+port=443 #自定义测速端口 不能为空!!!
+record_count=4 #二级域名个数，例如配置4个，则域名分别是 hk-443-1.xxxx.com 、hk-443-2.xxxx.com 、hk-443-3.xxxx.com 、hk-443-4.xxxx.com
 speedurl="https://vipcs.cloudflarest.link" #自定义测速地址，可以参考@科技KKK视频制作自己专属的测速链接，避免拥挤造成的测速不准。https://www.youtube.com/watch?v=AhJbfNdU0PE&t=439s
-
+###############################################################以下脚本内容，勿动#######################################################################
 proxygithub="https://ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://ghproxy.com/"
 
+#带有地区参数，将赋值第1参数为地区
+if [ -n "$1" ]; then 
+    area_GEC="$1"
+fi
+
+#带有端口参数，将赋值第2参数为端口
+if [ -n "$2" ]; then
+    port="$2"
+fi
+
+#带有CloudFlare账户邮箱参数，将赋值第6参数
+if [ -n "$5" ]; then
+    auth_email="$5"
+fi
+
+#带有CloudFlare账户key参数，将赋值第7参数
+if [ -n "$6" ]; then
+    auth_key="$6"
+fi
+
 update_gengxinzhi=0
-update_gengxin() {
+apt_update() {
     if [ "$update_gengxinzhi" -eq 0 ]; then
         sudo apt update
         update_gengxinzhi=$((update_gengxinzhi + 1))
     fi
 }
 
-# 检测是否已经安装了Git和Curl
-if ! command -v git &> /dev/null; then
-    echo "Git 未安装，开始安装..."
-	update_gengxin
-    sudo apt install git -y
-    echo "Git 安装完成！"
-else
-    echo "Git 已安装."
-fi
+# 检测并安装软件函数
+apt_install() {
+    if ! command -v "$1" &> /dev/null; then
+        echo "$1 未安装，开始安装..."
+        apt_update
+        sudo apt install "$1" -y
+        echo "$1 安装完成！"
+    else
+        # echo "$1 已安装."
+    fi
+}
 
-if ! command -v curl &> /dev/null; then
-    echo "Curl 未安装，开始安装..."
-	update_gengxin
-    sudo apt install curl -y
-    echo "Curl 安装完成！"
-else
-    echo "Curl 已安装."
-fi
-
-if ! command -v awk &> /dev/null; then
-    echo "awk 未安装，开始安装..."
-	update_gengxin
-    sudo apt install awk -y
-    echo "awk 安装完成！"
-else
-    echo "awk 已安装."
-fi
+# 检测并安装 Git、Curl、unzip 和 awk
+apt_install git
+apt_install curl
+apt_install unzip
+apt_install awk
+apt_install jq
 
 # 更新geoiplookup IP库
 download_GeoLite_mmdb() {
@@ -143,28 +155,35 @@ fi
 
 # 下载txt.zip文件并另存为txt.zip
 curl -Lo txt.zip https://zip.baipiao.eu.org
-# 解压磅.zip到temp文件夹
-unzip -o txt.zip -d temp/
+# 解压txt.zip到temp文件夹
+mkdir -p temp/temp
+unzip -o txt.zip -d temp/temp/
+mv temp/temp/*-${port}.txt temp/
 # 删除下载的zip文件
+rm -r temp/temp
 rm txt.zip
 echo "baipiao.eu.org IP库下载完成。"
 
-echo "验证更新hello-earth IP库"
-git clone "${proxygithub}https://github.com/hello-earth/cloudflare-better-ip.git"
+# 如果port等于443，则执行更新hello-earth IP库
+if [ "$port" -eq 443 ]; then
+    echo "验证更新hello-earth IP库"
+    git clone "${proxygithub}https://github.com/hello-earth/cloudflare-better-ip.git"
+    # 在这里添加你要执行的操作
+    
+    # 检查cloudflare-better-ip/cloudflare内是否有文件
+    if [ -d "cloudflare-better-ip/cloudflare" ] && [ -n "$(ls -A cloudflare-better-ip/cloudflare)" ]; then
+        echo "正在更新hello-earth IP库"
+        # 复制cloudflare-better-ip/cloudflare内的文件到temp文件夹
+    	cat cloudflare-better-ip/cloudflare/*.txt > cloudflare-better-ip/cloudflare-ip.txt
+    	awk -F ":443" '{print $1}' cloudflare-better-ip/cloudflare-ip.txt > temp/hello-earth-ip.txt
+        echo "hello-earth IP库下载完成。"
 
-# 检查cloudflare-better-ip/cloudflare内是否有文件
-if [ -d "cloudflare-better-ip/cloudflare" ] && [ -n "$(ls -A cloudflare-better-ip/cloudflare)" ]; then
-    echo "正在更新hello-earth IP库"
-    # 复制cloudflare-better-ip/cloudflare内的文件到temp文件夹
-	cat cloudflare-better-ip/cloudflare/*.txt > cloudflare-better-ip/cloudflare-ip.txt
-	awk -F ":443" '{print $1}' cloudflare-better-ip/cloudflare-ip.txt > temp/hello-earth-ip.txt
-    echo "hello-earth IP库下载完成。"
-
-    # 删除cloudflare-better-ip文件夹
-    rm -r cloudflare-better-ip
-    # echo "cloudflare-better-ip文件夹已删除。"
-else
-    echo "hello-earth IP库 无更新内容"
+        # 删除cloudflare-better-ip文件夹
+        rm -r cloudflare-better-ip
+        # echo "cloudflare-better-ip文件夹已删除。"
+    else
+        echo "hello-earth IP库 无更新内容"
+    fi
 fi
 
 echo "验证更新cmliu IP库"
@@ -174,7 +193,7 @@ git clone "${proxygithub}https://github.com/cmliu/cloudflare-better-ip.git"
 if [ -d "cloudflare-better-ip" ] && [ -n "$(ls -A cloudflare-better-ip)" ]; then
     echo "正在更新cmliu IP库"
     # 复制cloudflare-better-ip内的文件到temp文件夹
-	cp -r cloudflare-better-ip/*.txt temp/
+    cp -r cloudflare-better-ip/*-${port}.txt temp/
     echo "cmliu IP库下载完成。"
 
     # 删除cloudflare-better-ip文件夹
@@ -185,17 +204,17 @@ else
 fi
 
 cat temp/*.txt > ip_temp.txt
-# 检查ip.txt文件是否存在
-if [ -f "ip.txt" ]; then
-    rm ip.txt
+# 检查ip-${port}.txt文件是否存在
+if [ -f "ip-${port}.txt" ]; then
+    rm ip-${port}.txt
     echo "清除旧的ip库"
 fi
-awk '!a[$0]++' ip_temp.txt > ip.txt
+awk '!a[$0]++' ip_temp.txt > ip-${port}.txt
 rm ip_temp.txt
 echo "去重合并整理IP库完成"
 
-# 检查ip.txt文件是否存在
-if [ -f "ip.txt" ]; then
+# 检查ip-${port}.txt文件是否存在
+if [ -f "ip-${port}.txt" ]; then
 
 	# 检测ip文件夹是否存在
 	if [ -d "ip" ]; then
@@ -208,7 +227,7 @@ if [ -f "ip.txt" ]; then
 	fi
 
 echo "正在将IP按国家代码保存到ip文件夹内..."
-    # 逐行处理ip.txt文件
+    # 逐行处理ip-${port}.txt文件
     while read -r line; do
         ip=$(echo $line | cut -d ' ' -f 1)  # 提取IP地址部分
 		
@@ -217,20 +236,20 @@ echo "正在将IP按国家代码保存到ip文件夹内..."
 		#mmdblookup --file /usr/share/GeoIP/GeoLite2-Country.mmdb  --ip 8.8.8.8 country iso_code
 		result=$(mmdblookup --file /usr/share/GeoIP/GeoLite2-Country.mmdb --ip $ip country iso_code)
 		country_code=$(echo $result | awk -F '"' '{print $2}')
-		echo $ip >> "ip/${country_code}.txt"  # 写入对应的国家文件
-    done < ip.txt
+		echo $ip >> "ip/${country_code}-${port}.txt"  # 写入对应的国家文件
+    done < ip-${port}.txt
 
     echo "IP已按国家分类保存到ip文件夹内。"
 else
-    echo "ip.txt文件不存在，脚本终止。"
+    echo "ip-${port}.txt文件不存在，脚本终止。"
     exit 1
 fi
 }
 
-# 检查ip.txt文件是否存在
-if [ -e "ip.txt" ]; then
-    # 获取ip.txt文件的最后编辑时间戳
-    file_timestamp=$(stat -c %Y ip.txt)
+# 检查ip-${port}.txt文件是否存在
+if [ -e "ip-${port}.txt" ]; then
+    # 获取ip-${port}.txt文件的最后编辑时间戳
+    file_timestamp=$(stat -c %Y ip-${port}.txt)
 
     # 获取当前时间戳
     current_timestamp=$(date +%s)
@@ -244,13 +263,13 @@ if [ -e "ip.txt" ]; then
     # 如果时间差小于6小时
     if [ "$time_diff" -lt "$eight_hours_in_seconds" ]; then
         # 继续执行后续脚本逻辑
-        echo "ip.txt文件已是最新版本，无需更新"
+        echo "ip-${port}.txt文件已是最新版本，无需更新"
     else
-        echo "ip.txt文件已过期，开始更新整合IP库"
+        echo "ip-${port}.txt文件已过期，开始更新整合IP库"
 	upip
     fi
 else
-    echo "ip.txt文件不存在，开始更新整合IP库"
+    echo "ip-${port}.txt文件不存在，开始更新整合IP库"
     upip
 fi
 
@@ -258,51 +277,64 @@ if [ ! -d "log" ]; then
   mkdir log
 fi
 
-#带有地区参数，将赋值第1参数为地区
-if [ -n "$1" ]; then 
-    record_name="$1"
-    echo "地区 $1"
-fi
-
-#带有二级域名个数参数，将赋值第2参数为端口
-if [ -n "$2" ]; then
-    record_count="$2"
-    echo "获取域名数量 $2"
+#带有二级域名个数参数，将赋值第3参数为端口
+if [ -n "$3" ]; then
+    record_count="$3"
+    echo "获取域名数量 $3"
 fi
 speedqueue=$((record_count * 32)) #自定义测速队列，默认设置为配置域名数的16倍
 
 #带有域名参数，将赋值第3参数为地区
-if [ -n "$3" ]; then 
-    zone_name="$3"
-    echo "域名 $3"
+if [ -n "$4" ]; then 
+    zone_name="$4"
+    echo "域名 $4"
 fi
 
-#带有端口参数，将赋值第4参数为端口
-if [ -n "$4" ]; then
-    port="$4"
-    echo "测速端口 $4"
-fi
-
-#带有自定义测速地址参数，将赋值第5参数为自定义测速地址
-if [ -n "$5" ]; then
-    speedurl="$5"
-    echo "自定义测速地址 $5"
+#带有自定义测速地址参数，将赋值第7参数为自定义测速地址
+if [ -n "$7" ]; then
+    speedurl="$7"
+    echo "自定义测速地址 $7"
 else
     echo "使用默认测速地址 $speedurl"
 fi
 
-record_name0="${record_name^^}"
-ip_txt="ip/${record_name0}.txt"
-result_csv="log/${record_name0}.csv"
+record_name="${area_GEC}-${port}-"
+area_GEC0="${area_GEC^^}"
+ip_txt="ip/${area_GEC0}-${port}.txt"
+result_csv="log/${area_GEC0}-${port}.csv"
 
 if [ ! -f "$ip_txt" ]; then
-    echo "$record_name0 地区IP文件 $ip_txt 不存在。脚本终止。"
+    echo "$area_GEC0 地区IP文件 $ip_txt 不存在。脚本终止。"
     exit 1
 fi
 
-echo "$record_name0 地区IP文件 $ip_txt 存在"
-echo "待处理域名 ${record_name}[1-${record_count}].${zone_name}:${port}"
-echo '你的IP地址是'$(curl 4.ipw.cn)',请确认为本机未经过代理的地址'
+echo "$area_GEC0 地区IP文件 $ip_txt 存在"
+
+local_IP=$(curl -s 4.ipw.cn)
+#全球IP地理位置API请求和响应示例
+local_IP_geo=$(curl -s http://ip-api.com/json/${local_IP}?lang=zh-CN)
+# 使用jq解析JSON响应并提取所需的信息
+status=$(echo "$local_IP_geo" | jq -r '.status')
+
+if [ "$status" = "success" ]; then
+    countryCode=$(echo "$local_IP_geo" | jq -r '.countryCode')
+    country=$(echo "$local_IP_geo" | jq -r '.country')
+    regionName=$(echo "$local_IP_geo" | jq -r '.regionName')
+    city=$(echo "$local_IP_geo" | jq -r '.city')
+    # 如果status等于success，则显示地址信息
+    # echo "您的地址是 ${country}${regionName}${city}"
+    # 判断countryCode是否等于CN
+    if [ "$countryCode" != "CN" ]; then
+        echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络使用了代理，请关闭代理后重试。"
+        exit 1  # 在不是中国的情况下强行退出脚本
+    else
+        echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络未使用代理..."
+    fi
+else
+    echo "你的IP地址是 $local_IP 地址判断请求失败，请自行确认为本机网络未使用代理..."
+fi
+
+echo "待处理域名 ${record_name}[1~${record_count}].${zone_name}"
 
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
 ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -p 0 -o $result_csv
