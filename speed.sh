@@ -22,12 +22,12 @@ if [ -n "$2" ]; then
     port="$2"
 fi
 
-#带有CloudFlare账户邮箱参数，将赋值第6参数
+#带有CloudFlare账户邮箱参数，将赋值第5参数
 if [ -n "$5" ]; then
     auth_email="$5"
 fi
 
-#带有CloudFlare账户key参数，将赋值第7参数
+#带有CloudFlare账户key参数，将赋值第6参数
 if [ -n "$6" ]; then
     auth_key="$6"
 fi
@@ -47,8 +47,6 @@ apt_install() {
         apt_update
         sudo apt install "$1" -y
         echo "$1 安装完成！"
-    else
-        # echo "$1 已安装."
     fi
 }
 
