@@ -8,7 +8,7 @@
 $ wget -N -P cs https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/speed.sh && cd cs && chmod +x speed.sh 
 $ sh speed.sh [测速国家代码] [端口] [域名数量] [主域名] [CloudFlare账户邮箱] [CloudFlare账户key] [自定义测速地址]
 ```
-| 参数名| 中文解释| 一键脚本参数必填项 | 备注  |
+| 参数名| 中文解释| 一键脚本参数必填项 | 备注(注意!参数必须按顺序填写)  |
 |--------------------------|----------------|-----------------|-----------------|
 | area_GEC |测速国家代码 |√ | hk、sg、kr、jp、us等常用国家代码，默认hk |
 | port |端口  | √ | 443、2053、2083、2087、2096、8443，默认443 |
@@ -39,7 +39,7 @@ zone_name="xxxx.com"         #你的主域名 *必填
 sh speed.sh                       #测速默认香港地区,默认端口443,默认数量4,修改域名为默认hk-443-[1~4].xxxx.com
 sh speed.sh kr                    #测速韩国地区,默认端口443,默认数量4,修改域名为默认kr-443-[1~4].xxxx.com
 sh speed.sh jp 8443               #测速日本地区,自定义端口8443,默认数量4,修改域名为默认jp-8443-[1~4].xxxx.com
-sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,默认数量2,修改域名为默认jp-8443-[1~2].google.com
+sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,默认数量2,修改域名为默认jp-2096-[1~2].google.com
 ```
 
 ## 定时任务:
@@ -57,7 +57,7 @@ auth_email="xxxx@gmail.com"  #你的CloudFlare注册账户邮箱 *必填
 auth_key="xxxxxxxxxxxxxxx"   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
 zone_name="xxxx.com"         #你的主域名 *必填
 ```
-| 参数名| 中文解释| 修改`auth_email`、`auth_key`、`zone_name`值之后的必填项 | 备注  |
+| 参数名| 中文解释| 修改`auth_email`、`auth_key`、`zone_name`值之后的必填项 | 备注(注意!参数必须按顺序填写)  |
 |--------------------------|----------------|-----------------|-----------------|
 | area_GEC |测速国家代码 |× | hk、sg、kr、jp、us等常用国家代码，默认hk |
 | port |端口  | × | 443、2053、2083、2087、2096、8443，默认443 |
@@ -74,7 +74,7 @@ chmod +x speed.sh
 sh speed.sh                       #测速默认香港地区,默认端口443,默认数量4,修改域名为默认hk-443-[1~4].xxxx.com
 sh speed.sh kr                    #测速韩国地区,默认端口443,默认数量4,修改域名为默认kr-443-[1~4].xxxx.com
 sh speed.sh jp 8443               #测速日本地区,自定义端口8443,默认数量4,修改域名为默认jp-8443-[1~4].xxxx.com
-sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,默认数量2,修改域名为默认jp-8443-[1~2].google.com
+sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,默认数量2,修改域名为默认jp-2096-[1~2].google.com
 ```
 
 ## 文件结构
