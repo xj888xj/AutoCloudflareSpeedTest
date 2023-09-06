@@ -1,35 +1,30 @@
 #!/bin/bash
-# $ ./CDNDomainUpdate.sh cdn xxxx.com 3 xxxx@gmail.com xxxxxxxxxxxxxxx
+# $ ./CDNDomainUpdate.sh cdn xxxx.com xxxx@gmail.com xxxxxxxxxxxxxxx
 export LANG=zh_CN.UTF-8
 auth_email="xxxx@gmail.com"    #你的CloudFlare注册账户邮箱 *必填
 auth_key="xxxxxxxxxxxxxxx"   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
 zone_name="xxxx.com"     #你的主域名 *必填
 record_name="cdn" #二级域名前缀
-area=3 #每个地区更新的IP数量
 ###############################################################以下脚本内容，勿动#######################################################################
+area=2 #每个地区更新的IP数量
 #带有二级域名前缀参数
 if [ -n "$1" ]; then 
     record_name="$1"
 fi
 
-#带有每个地区更新的IP数量参数
-if [ -n "$2" ]; then 
-    area="$2"
-fi
-
 #带有主域名参数
-if [ -n "$3" ]; then 
-    zone_name="$3"
+if [ -n "$2" ]; then 
+    zone_name="$2"
 fi
 
 #带有CloudFlare账户邮箱参数
-if [ -n "$4" ]; then 
-    auth_email="$4"
+if [ -n "$3" ]; then 
+    auth_email="$3"
 fi
 
 #带有CloudFlare账户key参数
-if [ -n "$5" ]; then 
-    auth_key="$5"
+if [ -n "$4" ]; then 
+    auth_key="$4"
 fi
 
 record_type="A"     
@@ -38,48 +33,70 @@ zone_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?nam
 # echo $zone_identifier
 readarray -t record_identifiers < <(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name.$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*')
 
-# 找到所有匹配的文件
-log_files=(./log/*-443.csv)
-#echo "${log_files[@]}"
-
-count=0
-
-area_ip() {
-> ./log/CDN.csv #清空目标文件
-
-count=0
-# 遍历所有文件
-for file in "${log_files[@]}" 
-do
-  # 提取第2行起始内容写入目标文件    
-  sed -n "2,$((area+1))p" "$file" >> ./log/CDN.csv
-  ((count++))
-done
-}
-
 record_count=0
 for identifier in "${record_identifiers[@]}"; do
 	# echo "${record_identifiers[$record_count]}"
-   ((record_count++))
+	((record_count++))
 done
 
-area_ip
+file="./log/${record_name^^}-443.csv"
 
-while [ $record_count -gt $((count * area)) ]; do
-  echo "待更新域名数: $record_count" 
-  echo "待处理IP总数:$((count * area))"
-  #echo "record_count 大于 count * area"
-  echo "待处理域名数＞待处理IP总数，尝试给每个地区增加1个IP"
-  ((area++))
-  area_ip
-done
+if [ -e "$file" ]; then
+    	#echo "$file 存在."
+    	start=2
+	Rows=$((record_count + 1))
+ 	result_csv=$file
+  
+  	echo "待更新域名数: $record_count" 
+   	line_count=$(wc -l < "$file")
+    	echo "待处理IP总数: $((line_count - 1))"
+     	if [ "$record_count" -gt "$((line_count - 1))" ]; then
+	        echo "待处理域名数＞待处理IP总数，结束当前脚本."
+	 	echo "请重新运行speed.sh脚本,获取更多${record_name^^}地区待处理IP后再试."
+	        exit 1  # 可以选择适当的退出状态码
+    	fi
+     	echo "待更新域名 ${record_name}.${zone_name}"
+else
+    	#echo "$file 不存在."
+	# 找到所有匹配的文件
+	log_files=(./log/*-443.csv)
+	#echo "${log_files[@]}"
+	
+	count=0
+	
+	area_ip() {
+	> ./log/CDN.csv #清空目标文件
+	
+	count=0
+	# 遍历所有文件
+	for file in "${log_files[@]}" 
+	do
+	  # 提取第2行起始内容写入目标文件    
+	  sed -n "2,$((area+1))p" "$file" >> ./log/CDN.csv
+	  ((count++))
+	done
+	}
+	
+	area_ip
+	
+	while [ $record_count -gt $((count * area)) ]; do
+	  echo "待更新域名数: $record_count" 
+	  echo "待处理IP总数: $((count * area))"
+	  #echo "record_count 大于 count * area"
+	  echo "待处理域名数＞待处理IP总数，尝试给每个地区增加1个IP"
+	  ((area++))
+	  area_ip
+	done
+	
+	echo "待更新域名数: $record_count" 
+	echo "待处理IP总数: $((count * area))"
+	echo "待更新域名 ${record_name}.${zone_name}"
+	start=1
+	Rows=$record_count
+ 	result_csv="log/CDN.csv"
+fi
 
-echo "待更新域名数: $record_count" 
-echo "待处理IP总数:$((count * area))"
-echo "待更新域名 ${record_name}.${zone_name}"
-
-Rows=$record_count
-sed -n "1,$((Rows))p" log/CDN.csv | while read line
+sed -n "$((start)),$((Rows))p" $result_csv | while read line
 do
     #echo $record_name$record_count'.'$zone_name
     #record_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name"'.'"$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
