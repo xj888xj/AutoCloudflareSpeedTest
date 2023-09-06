@@ -8,7 +8,11 @@ zone_name="xxxx.com"     #你的主域名 *必填
 area_GEC="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
 port=443 #自定义测速端口 不能为空!!!
 record_count=4 #二级域名个数，例如配置4个，则域名分别是 hk-443-1.xxxx.com 、hk-443-2.xxxx.com 、hk-443-3.xxxx.com 、hk-443-4.xxxx.com
+
 speedurl="https://speed.cloudflare.com/__down?bytes=100000000" #自定义测速地址，可以参考@科技KKK视频制作自己专属的测速链接，避免拥挤造成的测速不准。https://www.youtube.com/watch?v=AhJbfNdU0PE&t=439s
+speedlower=11  #自定义下载速度下限,单位为mb/s
+lossmax=0.5  #自定义丢包几率上限；只输出低于/等于指定丢包率的 IP，范围 0.00~1.00，0 过滤掉任何丢包的 IP
+speedqueue_max=2 #自定义测速IP冗余量
 ###############################################################以下脚本内容，勿动#######################################################################
 proxygithub="https://ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://ghproxy.com/"
 
@@ -280,7 +284,7 @@ if [ -n "$3" ]; then
     record_count="$3"
     echo "获取域名数量 $3"
 fi
-speedqueue=$((record_count * 32)) #自定义测速队列，默认设置为配置域名数的16倍
+speedqueue=$((record_count + speedqueue_max)) #自定义测速队列，多测2条做冗余
 
 #带有域名参数，将赋值第3参数为地区
 if [ -n "$4" ]; then 
@@ -335,7 +339,7 @@ fi
 echo "待处理域名 ${record_name}[1~${record_count}].${zone_name}"
 
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
-./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -p 0 -o $result_csv
+./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tlr $lossmax -p 0 -sl $speedlower -o $result_csv
 
 record_type="A"     
 #获取zone_id、record_id
