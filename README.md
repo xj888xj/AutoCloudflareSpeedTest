@@ -18,15 +18,44 @@ $ sh speed.sh [测速国家代码] [端口] [域名数量] [主域名] [CloudFla
 | auth_key |CloudFlare账户key | √ | 默认xxxxxxxxxxxxxxx |
 | speedurl |自定义测速地址 | × | 默认https://speed.cloudflare.com/__down?bytes=100000000 |
 
-## 手动运行:
+## 事前准备
 运行前先去CloudFlare创建4条A记录,A记录IP随意即可
 ```
+默认 香港地区,端口443,数量4
 hk-443-1.xxxx.com
 hk-443-2.xxxx.com
 hk-443-3.xxxx.com
 hk-443-4.xxxx.com
+
+如需自定义地区端口数量可自行调整
+[测速国家代码]-[端口]-[域名数量].[主域名]
+
+例如:
+脚本命令:
+sh speed.sh kr
+对应创建域名
+kr-443-1.xxxx.com
+kr-443-2.xxxx.com
+kr-443-3.xxxx.com
+kr-443-4.xxxx.com
+
+脚本命令:
+sh speed.sh jp 8443
+对应创建域名
+jp-8443-1.xxxx.com
+jp-8443-1.xxxx.com
+jp-8443-1.xxxx.com
+jp-8443-1.xxxx.com
+
+脚本命令:
+sh speed.sh jp 2096 2 google.com
+对应创建域名
+jp-2096-1.google.com
+jp-2096-2.google.com
+
 ```
 
+## 手动运行:
 先修改speed.sh脚本内`auth_email`、`auth_key`、`zone_name`的值
 ```
 auth_email="xxxx@gmail.com"  #你的CloudFlare注册账户邮箱 *必填
@@ -43,14 +72,6 @@ sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,自定
 ```
 
 ## 定时任务:
-运行前同样需要先去CloudFlare创建4条A记录,A记录IP随意即可
-```
-hk-443-1.xxxx.com
-hk-443-2.xxxx.com
-hk-443-3.xxxx.com
-hk-443-4.xxxx.com
-```
-
 先修改speed.sh脚本内`auth_email`、`auth_key`、`zone_name`的值
 ```
 auth_email="xxxx@gmail.com"  #你的CloudFlare注册账户邮箱 *必填
@@ -69,12 +90,10 @@ zone_name="xxxx.com"         #你的主域名 *必填
 
 默认测速端口是443,默认测速域名数量为4
 ``` bash
-cd /root/cs
-chmod +x speed.sh
-sh speed.sh                       #测速默认香港地区,默认端口443,默认数量4,修改域名为默认    hk-443-[1~4].xxxx.com
-sh speed.sh kr                    #测速韩国地区,默认端口443,默认数量4,修改域名为默认        kr-443-[1~4].xxxx.com
-sh speed.sh jp 8443               #测速日本地区,自定义端口8443,默认数量4,修改域名为默认     jp-8443-[1~4].xxxx.com
-sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,自定义数量2,修改自定义域名为 jp-2096-[1~2].google.com
+cd /root/cs && chmod +x speed.sh && sh speed.sh hk                    #测速香港地区,默认端口443,默认数量4,修改域名为默认        hk-443-[1~4].xxxx.com
+cd /root/cs && chmod +x speed.sh && sh speed.sh kr                    #测速韩国地区,默认端口443,默认数量4,修改域名为默认        kr-443-[1~4].xxxx.com
+cd /root/cs && chmod +x speed.sh && sh speed.sh jp 8443               #测速日本地区,自定义端口8443,默认数量4,修改域名为默认     jp-8443-[1~4].xxxx.com
+cd /root/cs && chmod +x speed.sh && sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,自定义数量2,修改自定义域名为 jp-2096-[1~2].google.com
 ```
 
 ## 文件结构
