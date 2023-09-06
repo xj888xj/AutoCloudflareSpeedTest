@@ -36,10 +36,10 @@ zone_name="xxxx.com"         #你的主域名 *必填
 
 修改后运行以下命令即可
 ``` bash
-sh speed.sh                       #测速默认香港地区,默认端口443,默认数量4,修改域名为默认hk-443-[1~4].xxxx.com
-sh speed.sh kr                    #测速韩国地区,默认端口443,默认数量4,修改域名为默认kr-443-[1~4].xxxx.com
-sh speed.sh jp 8443               #测速日本地区,自定义端口8443,默认数量4,修改域名为默认jp-8443-[1~4].xxxx.com
-sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,默认数量2,修改域名为默认jp-2096-[1~2].google.com
+sh speed.sh                       #测速默认香港地区,默认端口443,默认数量4,修改域名为默认    hk-443-[1~4].xxxx.com
+sh speed.sh kr                    #测速韩国地区,默认端口443,默认数量4,修改域名为默认        kr-443-[1~4].xxxx.com
+sh speed.sh jp 8443               #测速日本地区,自定义端口8443,默认数量4,修改域名为默认     jp-8443-[1~4].xxxx.com
+sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,自定义数量2,修改自定义域名为 jp-2096-[1~2].google.com
 ```
 
 ## 定时任务:
@@ -71,10 +71,10 @@ zone_name="xxxx.com"         #你的主域名 *必填
 ``` bash
 cd /root/cs
 chmod +x speed.sh
-sh speed.sh                       #测速默认香港地区,默认端口443,默认数量4,修改域名为默认hk-443-[1~4].xxxx.com
-sh speed.sh kr                    #测速韩国地区,默认端口443,默认数量4,修改域名为默认kr-443-[1~4].xxxx.com
-sh speed.sh jp 8443               #测速日本地区,自定义端口8443,默认数量4,修改域名为默认jp-8443-[1~4].xxxx.com
-sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,默认数量2,修改域名为默认jp-2096-[1~2].google.com
+sh speed.sh                       #测速默认香港地区,默认端口443,默认数量4,修改域名为默认    hk-443-[1~4].xxxx.com
+sh speed.sh kr                    #测速韩国地区,默认端口443,默认数量4,修改域名为默认        kr-443-[1~4].xxxx.com
+sh speed.sh jp 8443               #测速日本地区,自定义端口8443,默认数量4,修改域名为默认     jp-8443-[1~4].xxxx.com
+sh speed.sh jp 2096 2 google.com  #测速日本地区,自定义端口2096,自定义数量2,修改自定义域名为 jp-2096-[1~2].google.com
 ```
 
 ## 文件结构
