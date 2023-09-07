@@ -6,7 +6,7 @@ auth_key="xxxxxxxxxxxxxxx"   #你的CloudFlare账户key,位置在域名概述页
 zone_name="xxxx.com"     #你的主域名 *必填
 record_name="cdn" #二级域名前缀
 ###############################################################以下脚本内容，勿动#######################################################################
-area=2 #每个地区更新的IP数量
+area=1 #每个地区更新的IP数量
 #带有二级域名前缀参数
 if [ -n "$1" ]; then 
     record_name="$1"
@@ -75,21 +75,22 @@ else
 	  sed -n "2,$((area+1))p" "$file" >> ./log/CDN.csv
 	  ((count++))
 	done
+    	line_count=$(wc -l < ./log/CDN.csv )
 	}
 	
 	area_ip
-	
-	while [ $record_count -gt $((count * area)) ]; do
-	  echo "待更新域名数: $record_count" 
-	  echo "待处理IP总数: $((count * area))"
-	  #echo "record_count 大于 count * area"
-	  echo "待处理域名数＞待处理IP总数，尝试给每个地区增加1个IP"
-	  ((area++))
-	  area_ip
+
+	while [ $record_count -gt $line_count ]; do
+	  	echo "待更新域名数: $record_count" 
+	  	echo "待处理IP总数: $line_count"
+	  	#echo "record_count 大于 count * area"
+	  	echo "待处理域名数＞待处理IP总数，尝试给每个地区增加1个IP"
+	  	((area++))
+	  	area_ip
 	done
 	
 	echo "待更新域名数: $record_count" 
-	echo "待处理IP总数: $((count * area))"
+	echo "待处理IP总数: $line_count"
 	echo "待更新域名 ${record_name}.${zone_name}"
 	start=1
 	Rows=$record_count
