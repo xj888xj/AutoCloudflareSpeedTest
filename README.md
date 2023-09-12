@@ -22,7 +22,7 @@ $ sh speed.sh [测速国家代码] [端口] [域名数量] [主域名] [CloudFla
 | zone_name |主域名 | √ | 默认xxxx.com |
 | auth_email | CloudFlare账户邮箱 | √ | 默认xxxx@gmail.com |
 | auth_key |CloudFlare账户key | √ | 默认xxxxxxxxxxxxxxx |
-| speedurl |自定义测速地址 | × | 默认https://speed.cloudflare.com/__down?bytes=100000000 |
+| speedurl |自定义测速地址 | × | 默认https://vipcs.cloudflarest.link |
 
 ## 事前准备
 运行前先去CloudFlare创建4条A记录,A记录IP随意即可
@@ -92,7 +92,7 @@ zone_name="xxxx.com"         #你的主域名 *必填
 | zone_name |主域名 | × | 默认xxxx.com |
 | auth_email | CloudFlare账户邮箱 | × | 默认xxxx@gmail.com |
 | auth_key |CloudFlare账户key | × | 默认xxxxxxxxxxxxxxx |
-| speedurl |自定义测速地址 | × | 默认https://speed.cloudflare.com/__down?bytes=100000000 |
+| speedurl |自定义测速地址 | × | 默认https://vipcs.cloudflarest.link |
 
 默认测速端口是443,默认测速域名数量为4
 ``` bash
