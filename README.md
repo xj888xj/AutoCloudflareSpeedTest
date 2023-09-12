@@ -372,4 +372,4 @@ cs
 </details>
 
  # 感谢
- [xiaodao2026](https://github.com/xiaodao2026/speed)、[MaxMind](https://www.maxmind.com/)、[P3TERX](https://github.com/P3TERX/GeoLite.mmdb)、[XIU2](https://github.com/XIU2/CloudflareSpeedTest)、[hello-earth](https://github.com/hello-earth/cloudflare-better-ip)、[badafans](https://github.com/badafans/better-cloudflare-ip)等
+ [xiaodao2026](https://github.com/xiaodao2026/speed)、[MaxMind](https://www.maxmind.com/)、[P3TERX](https://github.com/P3TERX/GeoLite.mmdb)、[XIU2](https://github.com/XIU2/CloudflareSpeedTest)、[hello-earth](https://github.com/hello-earth/cloudflare-better-ip)、[badafans](https://github.com/badafans/better-cloudflare-ip)、[科技KKK](https://www.youtube.com/@KJKKK2023)等
