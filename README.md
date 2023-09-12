@@ -130,7 +130,6 @@ cs
 
 ****
 
-
 ## 2. 单域名对多IP，测速并更新
 <details>
 <summary><code><strong>「 点击查看 speed_AIO.sh 脚本使用示例 」</strong></code></summary>
@@ -254,6 +253,8 @@ cs
  └─ ip-8443.txt
 ```
 </details>
+
+****
 
 ## 3. 单域名对多地区IP，汇总更新（无测速内容，只汇总更新域名）
 <details>
