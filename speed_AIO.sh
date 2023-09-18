@@ -8,12 +8,12 @@ zone_name="xxxx.com"     #你的主域名 *必填
 area_GEC="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
 port=443 #自定义测速端口 不能为空!!!
 
-#speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长，过小会无法测出准确速度
+speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长，过小会无法测出准确速度
 speedlower=10  #自定义下载速度下限,单位为mb/s
 lossmax=0.75  #自定义丢包几率上限；只输出低于/等于指定丢包率的 IP，范围 0.00~1.00，0 过滤掉任何丢包的 IP
 speedqueue_max=1 #自定义测速IP冗余量
 ###############################################################以下脚本内容，勿动#######################################################################
-speedurl="https://vipcs.cloudflarest.link" #感谢@科技KKK大佬测速地址
+speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
 proxygithub="https://ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://ghproxy.com/"
 
 #带有地区参数，将赋值第1参数为地区
