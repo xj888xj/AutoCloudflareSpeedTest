@@ -60,6 +60,19 @@ else
     	#echo "$file 不存在."
 	# 找到所有匹配的文件
 	log_files=(./log/*.csv)
+
+	# 要排除的元素
+	element_to_exclude="./log/CDN.csv"
+
+	filtered_log_files=()
+	for file in "${log_files[@]}"; do
+	    if [ "$file" != "$element_to_exclude" ]; then
+	        filtered_log_files+=("$file")
+	    fi
+	done
+
+	# 将过滤后的数组重新赋值给 log_files
+	log_files=("${filtered_log_files[@]}")
 	#echo "${log_files[@]}"
 	
 	count=0
