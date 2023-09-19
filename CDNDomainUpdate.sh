@@ -59,7 +59,7 @@ if [ -e "$file" ]; then
 else
     	#echo "$file 不存在."
 	# 找到所有匹配的文件
-	log_files=(./log/*-443.csv)
+	log_files=(./log/*.csv)
 	#echo "${log_files[@]}"
 	
 	count=0
