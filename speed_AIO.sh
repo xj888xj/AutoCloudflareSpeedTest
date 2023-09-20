@@ -36,6 +36,17 @@ if [ -n "$5" ]; then
     auth_key="$5"
 fi
 
+# 选择客户端 CPU 架构
+archAffix(){
+    case "$(uname -m)" in
+        i386 | i686 ) echo '386' ;;
+        x86_64 | amd64 ) echo 'amd64' ;;
+        armv8 | arm64 | aarch64 ) echo 'arm64' ;;
+        s390x ) echo 's390x' ;;
+        * ) red "不支持的CPU架构!" && exit 1 ;;
+    esac
+}
+
 update_gengxinzhi=0
 apt_update() {
     if [ "$update_gengxinzhi" -eq 0 ]; then
@@ -112,12 +123,17 @@ fi
 download_CloudflareST() {
     # 发送 API 请求获取仓库信息（替换 <username> 和 <repo>）
     latest_version=$(curl -s https://api.github.com/repos/XIU2/CloudflareSpeedTest/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-    echo "最新版本号: $latest_version"
+    if [ -z "$latest_version" ]; then
+    	latest_version="v2.2.4"
+    	echo "下载版本号: $latest_version"
+    else
+    	echo "最新版本号: $latest_version"
+    fi
     # 下载文件到当前目录
-    curl -L -o CloudflareST_linux_amd64.tar.gz "${proxygithub}https://github.com/XIU2/CloudflareSpeedTest/releases/download/$latest_version/CloudflareST_linux_amd64.tar.gz"
+    curl -L -o CloudflareST.tar.gz "${proxygithub}https://github.com/XIU2/CloudflareSpeedTest/releases/download/$latest_version/CloudflareST_linux_$(archAffix).tar.gz"
     # 解压CloudflareST文件到当前目录
-    sudo tar -xvf CloudflareST_linux_amd64.tar.gz CloudflareST -C /
-	rm CloudflareST_linux_amd64.tar.gz
+    sudo tar -xvf CloudflareST.tar.gz CloudflareST -C /
+	rm CloudflareST.tar.gz
 
 }
 
