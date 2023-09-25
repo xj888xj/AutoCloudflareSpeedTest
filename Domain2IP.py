@@ -15,7 +15,7 @@ def clear_dns_cache():
         print(f"清除DNS缓存时发生错误: {e}")
 
 # 定义输入文件和输出文件的路径
-input_file = 'yxym.txt'
+input_file = 'Domain.txt'
 output_file = 'temp/yxip.txt'
 
 # 定义要使用的DNS服务器
