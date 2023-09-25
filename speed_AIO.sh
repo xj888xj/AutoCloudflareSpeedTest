@@ -221,6 +221,17 @@ else
     echo "cmliu IP库 无更新内容"
 fi
 
+if [ -e "Domain.txt" ]; then
+  if [ -e "Domain2IP.py" ]; then
+    python Domain2IP.py
+  else
+    curl -k -O "${proxygithub}https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/Domain2IP.py"
+    if [ $? -eq 0 ]; then
+      python Domain2IP.py
+    fi
+  fi
+fi
+
 cat temp/*.txt > ip_temp.txt
 # 检查ip-${port}.txt文件是否存在
 if [ -f "ip-${port}.txt" ]; then
