@@ -1,6 +1,7 @@
 import os
 import socket
 import subprocess
+import ipaddress
 
 # 清除本机DNS缓存
 def clear_dns_cache():
@@ -16,7 +17,7 @@ def clear_dns_cache():
 
 # 定义输入文件和输出文件的路径
 input_file = 'Domain.txt'
-output_file = 'temp/yxip.txt'
+output_file = 'temp/Domain2IP.txt'
 
 # 定义要使用的DNS服务器
 dns_servers = ['114.114.114.114', '119.28.28.28', '223.5.5.5', '8.8.8.8', '208.67.222.222']
@@ -47,24 +48,76 @@ for line in lines:
     if not domain:
         continue
 
+    # 禁用DNS缓存
+    socket.setdefaulttimeout(0)
+    ips0 = []
+    print(f"解析域名: {domain}")
     # 遍历DNS服务器进行解析
     for dns_server in dns_servers:
         try:
             ips = socket.gethostbyname_ex(domain)[2]
+            ips0.extend(ips)  # 将解析得到的所有IP添加到列表中
             ip_addresses.extend(ips)  # 将解析得到的所有IP添加到列表中
-            
-            # 输出解析结果
-            print(f"域名: {domain}, DNS服务器: {dns_server}, IP地址: {ips}")
-        except socket.gaierror:
-            print(f"无法解析域名 {domain} 使用DNS服务器 {dns_server}")
+        except socket.gaierror as e:
+            print(f"DNS服务器 {dns_server}无法解析域名 : {e}")
+        except Exception as e:
+            print(f"DNS服务器 {dns_server}发生未知错误 : {e}")
+
+    # 去重
+    ips0 = list(set(ips0))
+    # 输出解析结果
+    print(f"IP地址: {ips0}")
+
+    # 恢复默认的解析超时
+    socket.setdefaulttimeout(5)
 
 # 去重
 ip_addresses = list(set(ip_addresses))
 
+# 定义删除CF官方IP地址段
+ip_ranges_to_delete = [
+    '173.245.48.0/20',
+    '103.21.244.0/22',
+    '103.22.200.0/22',
+    '103.31.4.0/22',
+    '141.101.64.0/18',
+    '108.162.192.0/18',
+    '190.93.240.0/20',
+    '188.114.96.0/20',
+    '197.234.240.0/22',
+    '198.41.128.0/17',
+    '162.158.0.0/15',
+    '104.16.0.0/12',
+    '172.64.0.0/17',
+    '172.64.128.0/18',
+    '172.64.192.0/19',
+    '172.64.224.0/22',
+    '172.64.229.0/24',
+    '172.64.230.0/23',
+    '172.64.232.0/21',
+    '172.64.240.0/21',
+    '172.64.248.0/21',
+    '172.65.0.0/16',
+    '172.66.0.0/16',
+    '172.67.0.0/16',
+    '131.0.72.0/22'
+]
+
+# 过滤掉要删除的IP地址段
+filtered_ip_addresses = []
+for ip in ip_addresses:
+    is_in_ranges = False
+    for ip_range in ip_ranges_to_delete:
+        if ipaddress.IPv4Address(ip) in ipaddress.IPv4Network(ip_range, strict=False):
+            is_in_ranges = True
+            break
+    if not is_in_ranges:
+        filtered_ip_addresses.append(ip)
+
 # 追加解析后的IP到输出文件
 try:
     with open(output_file, 'a') as f:  # 使用 'a' 模式以追加方式打开文件
-        for ip in ip_addresses:
+        for ip in filtered_ip_addresses:
             f.write(ip + '\n')
 except FileNotFoundError:
     print(f"找不到文件 {output_file}")
