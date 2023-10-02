@@ -15,7 +15,7 @@ speedqueue_max=1 #自定义测速IP冗余量
 ###############################################################以下脚本内容，勿动#######################################################################
 speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
 proxygithub="https://ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://ghproxy.com/"
-
+CloudFlareIP_password=""
 #带有地区参数，将赋值第1参数为地区
 if [ -n "$1" ]; then 
     area_GEC="$1"
@@ -230,6 +230,10 @@ if [ -e "Domain.txt" ]; then
       python3 Domain2IP.py
     fi
   fi
+fi
+
+if [ -n "$CloudFlareIP_password" ]; then
+  curl -k -Lo temp/CloudFlareIP.txt https://xvxvxv:${CloudFlareIP_password}@ip.ssrc.cf/
 fi
 
 cat temp/*.txt > ip_temp.txt
