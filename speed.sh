@@ -411,7 +411,7 @@ do
     record_count=$(($record_count-1))    #二级域名序号递减
     #echo $record_count
     if [ $record_count -eq 0 ]; then
-        TGmessage "ACFST_DDNS更新完成！%0A地区：$area_GEC0 端口：$port $TGtext0"
+        TGmessage "ACFST_DDNS更新完成！%0A地区:$area_GEC0 	端口:$port $TGtext0"
         break
     fi
 
