@@ -401,18 +401,18 @@ do
     update=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$record_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"type\":\"$record_type\",\"name\":\"$record_name$record_count.$zone_name\",\"content\":\"${line%%,*}\",\"ttl\":60,\"proxied\":false}")
     #反馈更新情况
     if [[ "$update" != "${update%success*}" ]] && [[ "$(echo $update | grep "\"success\":true")" != "" ]]; then
-      echo $record_name$record_count'.'$zone_name'更新成功:'${line%%,*}
-      TGtext0="${TGtext0}${record_name$record_count}.${zone_name} 更新成功: ${line%%,*}%0A"
+      TGtext=$record_name$record_count'.'$zone_name' 更新成功: '${line%%,*}
+      echo $TGtext
     else
-      echo $record_name$record_count'.'$zone_name'更新失败:'$update
-      TGtext0="${TGtext0}${record_name$record_count}.${zone_name} 更新失败: ${update}%0A"
+      TGtext=$record_name$record_count'.'$zone_name' 更新失败: '${update}
+      echo $TGtext
     fi
-
+    TGtext0="$TGtext0%0A$TGtext"
     record_count=$(($record_count-1))    #二级域名序号递减
-    echo $record_count
+    #echo $record_count
     if [ $record_count -eq 0 ]; then
+        TGmessage "ACFST_DDNS更新完成！%0A$TGtext0"
         break
     fi
 
 done
-TGmessage "ACFST_DDNS完成.%0A$TGtext0"
