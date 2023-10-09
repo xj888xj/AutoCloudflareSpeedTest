@@ -13,6 +13,10 @@ speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长�
 speedlower=10  #自定义下载速度下限,单位为mb/s
 lossmax=0.75  #自定义丢包几率上限；只输出低于/等于指定丢包率的 IP，范围 0.00~1.00，0 过滤掉任何丢包的 IP
 speedqueue_max=1 #自定义测速IP冗余量
+
+telegramBotUserId="" # telegram UserId
+telegramBotToken="" #telegram BotToken
+telegramBotAPI="api.telegram.ssrc.cf" #telegram 推送API,留空将启用官方API接口:api.telegram.org
 ###############################################################以下脚本内容，勿动#######################################################################
 speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
 proxygithub="https://ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://ghproxy.com/"
@@ -72,6 +76,31 @@ apt_install curl
 apt_install unzip
 apt_install awk
 apt_install jq
+
+TGmessage(){
+if [ -z "$telegramBotAPI" ]; then
+    telegramBotAPI="api.telegram.org"
+fi
+#解析模式，可选HTML或Markdown
+MODE='HTML'
+#api接口
+URL="https://${telegramBotAPI}/bot${telegramBotToken}/sendMessage"
+if [[ -z ${telegramBotToken} ]]; then
+   echo "Telegram 推送通知未配置。"
+else
+   res=$(timeout 20s curl -s -X POST $URL -d chat_id=${telegramBotUserId}  -d parse_mode=${MODE} -d text="$1")
+    if [ $? == 124 ];then
+      echo "Telegram API请求超时，请检查网络是否能够访问Telegram或者更换telegramBotAPI。"          
+    else
+      resSuccess=$(echo "$res" | jq -r ".ok")
+      if [[ $resSuccess = "true" ]]; then
+        echo "Telegram 消息推送成功！"
+      else
+        echo "Telegram 消息推送失败，请检查Telegram机器人的telegramBotToken和telegramBotUserId！"
+      fi
+    fi
+fi
+}
 
 # 更新geoiplookup IP库
 download_GeoLite_mmdb() {
@@ -362,6 +391,7 @@ record_type="A"
 zone_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
 #echo $zone_identifier
 
+TGtext0=""
 sed -n '2,20p' $result_csv | while read line
 do
     #echo $record_name$record_count'.'$zone_name
@@ -371,9 +401,11 @@ do
     update=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$record_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"type\":\"$record_type\",\"name\":\"$record_name$record_count.$zone_name\",\"content\":\"${line%%,*}\",\"ttl\":60,\"proxied\":false}")
     #反馈更新情况
     if [[ "$update" != "${update%success*}" ]] && [[ "$(echo $update | grep "\"success\":true")" != "" ]]; then
-      echo $record_name$record_count'.'$zone_name'更新为:'${line%%,*}'....成功'
+      echo $record_name$record_count'.'$zone_name'更新成功:'${line%%,*}
+      TGtext0="${TGtext0}${record_name$record_count}.${zone_name} 更新成功: ${line%%,*}%0A"
     else
       echo $record_name$record_count'.'$zone_name'更新失败:'$update
+      TGtext0="${TGtext0}${record_name$record_count}.${zone_name} 更新失败: ${update}%0A"
     fi
 
     record_count=$(($record_count-1))    #二级域名序号递减
@@ -383,3 +415,4 @@ do
     fi
 
 done
+TGmessage "ACFST_DDNS完成.%0A$TGtext0"
