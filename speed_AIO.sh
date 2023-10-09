@@ -12,6 +12,10 @@ speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长�
 speedlower=10  #自定义下载速度下限,单位为mb/s
 lossmax=0.75  #自定义丢包几率上限；只输出低于/等于指定丢包率的 IP，范围 0.00~1.00，0 过滤掉任何丢包的 IP
 speedqueue_max=1 #自定义测速IP冗余量
+
+telegramBotUserId="" # telegram UserId
+telegramBotToken="" #telegram BotToken
+telegramBotAPI="api.telegram.ssrc.cf" #telegram 推送API,留空将启用官方API接口:api.telegram.org
 ###############################################################以下脚本内容，勿动#######################################################################
 speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
 proxygithub="https://ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://ghproxy.com/"
@@ -71,6 +75,31 @@ apt_install curl
 apt_install unzip
 apt_install awk
 apt_install jq
+
+TGmessage(){
+if [ -z "$telegramBotAPI" ]; then
+    telegramBotAPI="api.telegram.org"
+fi
+#解析模式，可选HTML或Markdown
+MODE='HTML'
+#api接口
+URL="https://${telegramBotAPI}/bot${telegramBotToken}/sendMessage"
+if [[ -z ${telegramBotToken} ]]; then
+   echo "Telegram 推送通知未配置。"
+else
+   res=$(timeout 20s curl -s -X POST $URL -d chat_id=${telegramBotUserId}  -d parse_mode=${MODE} -d text="$1")
+    if [ $? == 124 ];then
+      echo "Telegram API请求超时，请检查网络是否能够访问Telegram或者更换telegramBotAPI。"          
+    else
+      resSuccess=$(echo "$res" | jq -r ".ok")
+      if [[ $resSuccess = "true" ]]; then
+        echo "Telegram 消息推送成功！"
+      else
+        echo "Telegram 消息推送失败，请检查Telegram机器人的telegramBotToken和telegramBotUserId！"
+      fi
+    fi
+fi
+}
 
 # 更新geoiplookup IP库
 download_GeoLite_mmdb() {
@@ -368,6 +397,7 @@ speedqueue=$((record_count + speedqueue_max)) #自定义测速队列，多测2�
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
 ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tlr $lossmax -p 0 -sl $speedlower -o $result_csv
 
+TGtext0=""
 sed -n '2,20p' $result_csv | while read line
 do
     #echo $record_name$record_count'.'$zone_name
@@ -378,14 +408,17 @@ do
     #反馈更新情况
 	
     if [[ "$update" != "${update%success*}" ]] && [[ "$(echo $update | grep "\"success\":true")" != "" ]]; then
-      echo $record_name'.'$zone_name'更新为:'${line%%,*}'....成功'
+      TGtext=$record_name'.'$zone_name' 更新成功: '${line%%,*}
+      echo $TGtext
     else
-      echo $record_name'.'$zone_name'更新失败:'$update
+      TGtext=$record_name'.'$zone_name' 更新失败: '${update}
+      echo $TGtext
     fi
-	
+    TGtext0="$TGtext0%0A$TGtext"
     record_count=$(($record_count-1))    #二级域名序号递减
-    echo $record_count
+    #echo $record_count
     if [ $record_count -eq 0 ]; then
+        TGmessage "ACFST_DDNS更新完成！%0A地区:$area_GEC0 	端口:$port $TGtext0"
         break
     fi
 
