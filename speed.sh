@@ -241,7 +241,7 @@ git clone "${proxygithub}https://github.com/cmliu/cloudflare-better-ip.git"
 if [ -d "cloudflare-better-ip" ] && [ -n "$(ls -A cloudflare-better-ip)" ]; then
     echo "正在更新cmliu IP库"
     # 复制cloudflare-better-ip内的文件到temp文件夹
-	cp -r cloudflare-better-ip/*.txt temp/
+	cp -r cloudflare-better-ip/*${port}.txt temp/
     echo "cmliu IP库下载完成。"
 
     # 删除cloudflare-better-ip文件夹
@@ -252,7 +252,7 @@ else
 fi
 
 if [ -n "$CloudFlareIP_password" ]; then
-  echo "验证更新 CSIPS库"
+  echo "验证更新 CFIPS库"
   curl -k -Lo temp/CloudFlareIP-${port}.txt https://xvxvxv:${CloudFlareIP_password}@ip.ssrc.cf/CloudFlareIP-${port}.txt
 fi
 
