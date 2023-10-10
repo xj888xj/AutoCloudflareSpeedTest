@@ -233,8 +233,25 @@ if [ "$port" -eq 443 ]; then
     fi
 fi
 
+echo "验证更新cmliu IP库"
+git clone "${proxygithub}https://github.com/cmliu/cloudflare-better-ip.git"
+
+# 检查cmliu/cloudflare-better-ip/cloudflare内是否有文件
+if [ -d "cloudflare-better-ip" ] && [ -n "$(ls -A cloudflare-better-ip)" ]; then
+    echo "正在更新cmliu IP库"
+    # 复制cloudflare-better-ip内的文件到temp文件夹
+	cp -r cloudflare-better-ip/*.txt temp/
+    echo "cmliu IP库下载完成。"
+
+    # 删除cloudflare-better-ip文件夹
+    rm -r cloudflare-better-ip
+    # echo "cloudflare-better-ip文件夹已删除。"
+else
+    echo "cmliu IP库 无更新内容"
+fi
+
 if [ -n "$CloudFlareIP_password" ]; then
-  echo "验证更新cmliu IP库"
+  echo "验证更新 CFIPS库"
   curl -k -Lo temp/CloudFlareIP.txt https://xvxvxv:${CloudFlareIP_password}@ip.ssrc.cf/
 fi
 
