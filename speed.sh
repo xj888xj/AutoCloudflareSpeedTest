@@ -253,7 +253,7 @@ fi
 
 if [ -n "$CloudFlareIP_password" ]; then
   echo "验证更新 CSIPS库"
-  curl -k -Lo temp/CloudFlareIP.txt https://xvxvxv:${CloudFlareIP_password}@ip.ssrc.cf/
+  curl -k -Lo temp/CloudFlareIP-${port}.txt https://xvxvxv:${CloudFlareIP_password}@ip.ssrc.cf/CloudFlareIP-${port}.txt
 fi
 
 if [ -e "Domain.txt" ]; then
