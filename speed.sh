@@ -252,8 +252,14 @@ else
 fi
 
 if [ -n "$CloudFlareIP_password" ]; then
-  echo "验证更新 CFIPS库"
-  curl -k -Lo temp/CloudFlareIP-${port}.txt https://xvxvxv:${CloudFlareIP_password}@ip.ssrc.cf/CloudFlareIP-${port}.txt
+  echo "正在验证 CFIPS库更新密码"
+  status_code=$(curl --write-out %{http_code} --silent --output /dev/null -k https://xvxvxv:${CloudFlareIP_password}@ip.ssrc.cf/CloudFlareIP-${port}.txt)
+  if [ "$status_code" -eq 200 ]; then
+    echo "验证成功 开始更新CFIPS库"
+    curl -k -Lo temp/CloudFlareIP-${port}.txt https://xvxvxv:${CloudFlareIP_password}@ip.ssrc.cf/CloudFlareIP-${port}.txt
+  else
+    echo "密码有误或不存在当前端口的CFIPS库"
+  fi
 fi
 
 if [ -e "Domain.txt" ]; then
