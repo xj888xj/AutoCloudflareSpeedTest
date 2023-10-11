@@ -261,7 +261,7 @@ if [ -n "$CloudFlareIP_password" ]; then
   fi
 fi
 
-if [ -e "Domain.txt" ]; then
+if [ -e "Domain.txt" ] && { [ "$port" -eq 443 ] || [ "$port" -eq 80 ]; }; then
   if [ -e "Domain2IP.py" ]; then
     python3 Domain2IP.py
   else
