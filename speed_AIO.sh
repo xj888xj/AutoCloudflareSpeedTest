@@ -426,17 +426,32 @@ do
     #echo $record_name$record_count'.'$zone_name
     #record_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name"'.'"$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
 	
-    #更新DNS记录
-    update=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/${record_identifiers[$record_count - 1]}" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"type\":\"$record_type\",\"name\":\"$record_name.$zone_name\",\"content\":\"${line%%,*}\",\"ttl\":60,\"proxied\":false}")
-    #反馈更新情况
-	
-    if [[ "$update" != "${update%success*}" ]] && [[ "$(echo $update | grep "\"success\":true")" != "" ]]; then
-      TGtext=$record_name'.'$zone_name' 更新成功: '${line%%,*}
-      echo $TGtext
-    else
-      TGtext=$record_name'.'$zone_name' 更新失败: '${update}
-      echo $TGtext
-    fi
+    # 初始化尝试次数
+    attempt=0
+    
+    # 更新DNS记录
+    while [[ $attempt -lt 3 ]]
+    do
+      update=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/${record_identifiers[$record_count - 1]}" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"type\":\"$record_type\",\"name\":\"$record_name.$zone_name\",\"content\":\"${line%%,*}\",\"ttl\":60,\"proxied\":false}")
+    
+      # 反馈更新情况
+      if [[ "$update" != "${update%success*}" ]] && [[ "$(echo $update | grep "\"success\":true")" != "" ]]; then
+        TGtext=$record_name'.'$zone_name' 更新成功: '${line%%,*}
+        echo $TGtext
+        break
+      elif [[ "$update" != "${update%success*}" ]] && [[ "$(echo $update | grep "\"code\":81058")" != "" ]]; then
+        TGtext=$record_name'.'$zone_name' 维护成功: '${line%%,*}
+        echo $TGtext
+        break
+      else
+        TGtext=$record_name'.'$zone_name' 更新失败: '${update}
+        echo $TGtext
+        attempt=$(( $attempt + 1 ))
+        echo "尝试次数: $attempt, 1分钟后将再次尝试更新..."
+        sleep 60
+      fi
+    done
+    
     TGtext0="$TGtext0%0A$TGtext"
     record_count=$(($record_count-1))    #二级域名序号递减
     #echo $record_count
