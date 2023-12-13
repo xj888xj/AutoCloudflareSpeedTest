@@ -14,7 +14,7 @@ lossmax=0.75  #自定义丢包几率上限；只输出低于/等于指定丢包�
 speedqueue_max=1 #自定义测速IP冗余量
 
 telegramBotUserId="" # telegram UserId
-telegramBotToken="" #telegram BotToken
+telegramBotToken="6599852032:AAHhetLKhXfAIjeXgCHpish1DK_NHo3BCrk" #telegram BotToken https://t.me/ACFST_DDNS_bot
 telegramBotAPI="api.telegram.ssrc.cf" #telegram 推送API,留空将启用官方API接口:api.telegram.org
 ###############################################################以下脚本内容，勿动#######################################################################
 speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
