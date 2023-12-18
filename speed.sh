@@ -19,7 +19,7 @@ telegramBotToken="6599852032:AAHhetLKhXfAIjeXgCHpish1DK_NHo3BCrk" #telegram BotT
 telegramBotAPI="api.telegram.ssrc.cf" #telegram 推送API,留空将启用官方API接口:api.telegram.org
 ###############################################################以下脚本内容，勿动#######################################################################
 speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
-proxygithub="https://ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://ghproxy.com/"
+proxygithub="https://mirror.ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://mirror.ghproxy.com/"
 CloudFlareIP_password=""
 #带有地区参数，将赋值第1参数为地区
 if [ -n "$1" ]; then 
@@ -417,9 +417,23 @@ zone_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?nam
 TGtext0=""
 sed -n '2,20p' $result_csv | while read line
 do
-    #echo $record_name$record_count'.'$zone_name
-    record_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name$record_count"'.'"$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
-    #echo $record_identifier
+record_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name$record_count"'.'"$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
+
+	# 执行 curl 命令并将结果保存到变量
+	result=$(curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records/${record_identifier}" \
+		 -H "X-Auth-Email: ${auth_email}" \
+		 -H "X-Auth-Key: ${auth_key}" \
+		 -H "Content-Type: application/json")
+
+	# 提取 success 字段的值
+	success=$(echo "${result}" | jq -r '.success')
+
+	# 判断 success 的值并输出相应的提示
+	if [ "${success}" == "true" ]; then
+		echo "$record_name$record_count.$zone_name 删除成功"
+	else
+		echo "$record_name$record_count.$zone_name 删除失败"
+	fi
 
     # 初始化尝试次数
     attempt=0
@@ -427,31 +441,48 @@ do
     # 更新DNS记录
     while [[ $attempt -lt 3 ]]
     do
-    update=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$record_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"type\":\"$record_type\",\"name\":\"$record_name$record_count.$zone_name\",\"content\":\"${line%%,*}\",\"ttl\":60,\"proxied\":false}")
-    
-      # 反馈更新情况
-      if [[ "$update" != "${update%success*}" ]] && [[ "$(echo $update | grep "\"success\":true")" != "" ]]; then
-        TGtext=$record_name$record_count'.'$zone_name' 更新成功: '${line%%,*}
-        echo $TGtext
-        break
-      elif [[ "$update" != "${update%success*}" ]] && [[ "$(echo $update | grep "\"code\":81058")" != "" ]]; then
-        TGtext=$record_name$record_count'.'$zone_name' 维护成功: '${line%%,*}
-        echo $TGtext
-        break
-      else
-        TGtext=$record_name$record_count'.'$zone_name' 更新失败: '${update}
-        echo $TGtext
-        attempt=$(( $attempt + 1 ))
-        echo "尝试次数: $attempt, 1分钟后将再次尝试更新..."
-        sleep 60
-      fi
+	
+		# 执行 curl 命令并将结果保存到变量
+		result=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records" \
+			 -H "X-Auth-Email: ${auth_email}" \
+			 -H "X-Auth-Key: ${auth_key}" \
+			 -H "Content-Type: application/json" \
+			 --data '{
+			   "type": "'"${record_type}"'",
+			   "name": "'"${record_name}${record_count}"'.'"${zone_name}"'",
+			   "content": "'"${line%%,*}"'",
+			   "ttl": 60,
+			   "proxied": false
+			 }')
+
+		# 提取 success 字段的值
+		success=$(echo "${result}" | jq -r '.success')
+
+		# 判断 success 的值并输出相应的提示
+		if [ "${success}" == "true" ]; then
+		    TGtext=$record_name$record_count'.'$zone_name' 更新成功: '${line%%,*}
+			echo $TGtext
+			break
+			echo "创建成功"
+		else
+
+			# 输出 messages 内容
+			messages=$(echo "${result}" | jq -r '.messages | join(", ")')
+			#echo "错误信息: ${messages}"
+			
+			TGtext=$record_name$record_count'.'$zone_name' 更新失败: '${messages}
+			echo $TGtext
+			attempt=$(( $attempt + 1 ))
+			echo "尝试次数: $attempt, 1分钟后将再次尝试更新..."
+			sleep 60
+		fi
+
     done
     
     TGtext0="$TGtext0%0A$TGtext"
     record_count=$(($record_count-1))    #二级域名序号递减
-    #echo $record_count
     if [ $record_count -eq 0 ]; then
-        TGmessage "ACFST_DDNS更新完成！%0A地区:$area_GEC0 	端口:$port $TGtext0"
+        TGmessage "ACFST_DDNS更新完成！%0A地区:$record_name 	端口:$port $TGtext0"
         break
     fi
 
