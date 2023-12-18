@@ -137,56 +137,22 @@ cs
  
 ``` bash
 $ wget -N -P cs https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/speed_AIO.sh && cd cs && chmod +x speed_AIO.sh 
-$ sh speed_AIO.sh [测速国家代码] [端口] [主域名] [CloudFlare账户邮箱] [CloudFlare账户key] [自定义测速地址]
+$ sh speed_AIO.sh [测速国家代码] [端口] [IP数量] [主域名] [CloudFlare账户邮箱] [CloudFlare账户key] [自定义测速地址]
 ```
 | 参数名| 中文解释| 一键脚本参数必填项 | 备注(注意!参数必须按顺序填写)  |
 |--------------------------|----------------|-----------------|-----------------|
 | area_GEC |测速国家代码 |√ | hk、sg、kr、jp、us等常用国家代码，默认hk |
 | port |端口  | √ | 443、2053、2083、2087、2096、8443，默认443 |
+| ips |域名数量 | √ | 默认4 |
 | zone_name |主域名 | √ | 默认xxxx.com |
 | auth_email | CloudFlare账户邮箱 | √ | 默认xxxx@gmail.com |
 | auth_key |CloudFlare账户key | √ | 默认xxxxxxxxxxxxxxx |
 | speedurl |自定义测速地址 | × | 默认https://vipcs.cloudflarest.link |
 
 ## 事前准备
-运行前先去CloudFlare创建对应测速域名的A记录，A记录IP随意即可
+~~运行前先去CloudFlare创建对应测速域名的A记录，A记录IP随意即可~~
 
-**注意：您想获取多少IP数量就对应创建多少A记录，如使用默认443端口,则二级域名后可不带端口**
-
-```
-默认 香港地区,端口443,数量4
-hk.xxxx.com 
-hk.xxxx.com 
-hk.xxxx.com 
-hk.xxxx.com 
-
-如需自定义地区端口数量可自行调整
-[测速国家代码]-[端口].[主域名]
-
-例如:
-脚本命令:
-sh speed_AIO.sh kr
-对应创建域名
-kr.xxxx.com
-kr.xxxx.com
-kr.xxxx.com
-kr.xxxx.com
-
-脚本命令:
-sh speed_AIO.sh jp 8443
-对应创建域名
-jp-8443.xxxx.com
-jp-8443.xxxx.com
-jp-8443.xxxx.com
-jp-8443.xxxx.com
-
-脚本命令:
-sh speed_AIO.sh jp 2096 google.com
-对应创建域名
-jp-2096.google.com
-jp-2096.google.com
-
-```
+~~**注意：您想获取多少IP数量就对应创建多少A记录，如使用默认443端口,则二级域名后可不带端口**~~
 
 ## 手动运行:
 先修改speed.sh脚本内`auth_email`、`auth_key`、`zone_name`的值
@@ -200,8 +166,8 @@ zone_name="xxxx.com"         #你的主域名 *必填
 ``` bash
 sh speed_AIO.sh                       #测速默认香港地区,默认端口443,修改域名为默认    hk.xxxx.com
 sh speed_AIO.sh kr                    #测速韩国地区,默认端口443,修改域名为默认        kr.xxxx.com
-sh speed_AIO.sh jp 8443               #测速日本地区,自定义端口8443,修改域名为默认     jp-8443.xxxx.com
-sh speed_AIO.sh jp 2096 google.com  #测速日本地区,自定义端口2096,修改自定义域名为     jp-2096.google.com
+sh speed_AIO.sh jp 8443 6             #测速日本地区,自定义端口8443,修改域名为默认     jp-8443.xxxx.com 6条IP记录
+sh speed_AIO.sh jp 2096 8 google.com  #测速日本地区,自定义端口2096,修改自定义域名为     jp-2096.google.com 8条IP记录
 ```
 
 ## 定时任务:
@@ -215,6 +181,7 @@ zone_name="xxxx.com"         #你的主域名 *必填
 |--------------------------|----------------|-----------------|-----------------|
 | area_GEC |测速国家代码 |× | hk、sg、kr、jp、us等常用国家代码，默认hk |
 | port |端口  | × | 443、2053、2083、2087、2096、8443，默认443 |
+| ips |域名数量 | × | 默认4 |
 | zone_name |主域名 | × | 默认xxxx.com |
 | auth_email | CloudFlare账户邮箱 | × | 默认xxxx@gmail.com |
 | auth_key |CloudFlare账户key | × | 默认xxxxxxxxxxxxxxx |
@@ -225,7 +192,7 @@ zone_name="xxxx.com"         #你的主域名 *必填
 cd /root/cs && chmod +x speed_AIO.sh && sh speed_AIO.sh hk                    #测速香港地区,默认端口443,修改域名为默认        hk.xxxx.com
 cd /root/cs && chmod +x speed_AIO.sh && sh speed_AIO.sh kr                    #测速韩国地区,默认端口443,修改域名为默认        kr.xxxx.com
 cd /root/cs && chmod +x speed_AIO.sh && sh speed_AIO.sh jp 8443               #测速日本地区,自定义端口8443,,修改域名为默认     jp-8443.xxxx.com
-cd /root/cs && chmod +x speed_AIO.sh && sh speed_AIO.sh jp 2096 google.com  #测速日本地区,自定义端口2096,修改自定义域名为      jp-2096.google.com
+cd /root/cs && chmod +x speed_AIO.sh && sh speed_AIO.sh jp 2096 6 google.com  #测速日本地区,自定义端口2096,修改自定义域名为      jp-2096.google.com
 ```
 
 ## 文件结构
