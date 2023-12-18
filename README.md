@@ -223,7 +223,7 @@ cs
 
 ****
 
-## 3. 单域名对多地区IP，汇总更新（无测速内容，只汇总更新域名）
+## ~~3. 单域名对多地区IP，汇总更新（无测速内容，只汇总更新域名）~~ 不实用，不维护了
 <details>
 <summary><code><strong>「 点击查看 CDNDomainUpdate.sh 脚本使用示例 」</strong></code></summary>
 一键脚本
