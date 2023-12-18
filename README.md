@@ -25,7 +25,7 @@ $ sh speed.sh [测速国家代码] [端口] [域名数量] [主域名] [CloudFla
 | speedurl |自定义测速地址 | × | 默认https://vipcs.cloudflarest.link |
 
 ## 事前准备
-运行前先去CloudFlare创建4条A记录,A记录IP随意即可
+~~运行前先去CloudFlare创建4条A记录,A记录IP随意即可~~ 直接运行即可
 ```
 默认 香港地区,端口443,数量4
 hk-443-1.xxxx.com
@@ -337,6 +337,8 @@ cs
 
 ```
 </details>
+
+#### speed脚本内有 telegram 推送配置，有需要运行前自行填写telegram参数。
 
  # 感谢
  [xiaodao2026](https://github.com/xiaodao2026/speed)、[MaxMind](https://www.maxmind.com/)、[P3TERX](https://github.com/P3TERX/GeoLite.mmdb)、[XIU2](https://github.com/XIU2/CloudflareSpeedTest)、[hello-earth](https://github.com/hello-earth/cloudflare-better-ip)、[badafans](https://github.com/badafans/better-cloudflare-ip)、[科技KKK](https://www.youtube.com/@KJKKK2023)等
