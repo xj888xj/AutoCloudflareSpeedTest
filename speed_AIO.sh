@@ -426,7 +426,8 @@ speedqueue=$((ips + speedqueue_max)) #自定义测速队列，多测2条做冗�
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
 ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tlr $lossmax -p 0 -sl $speedlower -o $result_csv
 
-for record_id in "${record_identifiers[@]}"; do
+if [ "$record_count" -gt 0 ]; then
+  for record_id in "${record_identifiers[@]}"; do
 
 	# 执行 curl 命令并将结果保存到变量
 	result=$(curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records/${record_id}" \
@@ -445,7 +446,8 @@ for record_id in "${record_identifiers[@]}"; do
 	fi
     # 可以在这里添加适当的等待时间，以避免对 API 的过多请求
     sleep 1
-done
+  done
+fi
 
 #exit 1
 ips0=$ips
@@ -500,10 +502,8 @@ do
     TGtext0="$TGtext0%0A$TGtext"
     ips=$(($ips-1))    #二级域名序号递减
     if [ $ips -eq 0 ]; then
+        TGmessage "ACFST_DDNS更新完成！%0A地区:$record_name 	端口:$port $TGtext0"
         break
     fi
 
 done
-if [ "$ips" -lt "$ips0" ]; then
-        TGmessage "ACFST_DDNS更新完成！%0A地区:$record_name 	端口:$port $TGtext0"
-fi
