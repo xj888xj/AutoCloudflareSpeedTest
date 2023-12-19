@@ -6,8 +6,8 @@ auth_key="xxxxxxxxxxxxxxx"   #你的CloudFlare账户key,位置在域名概述页
 zone_name="xxxx.com"     #你的主域名 *必填
 
 area_GEC="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
-ips=4    #获取更新IP的指定数量，默认为4 
 port=443 #自定义测速端口 不能为空!!!
+ips=4    #获取更新IP的指定数量，默认为4 
 
 speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长，过小会无法测出准确速度
 speedlower=10  #自定义下载速度下限,单位为mb/s
@@ -421,7 +421,7 @@ for identifier in "${record_identifiers[@]}"; do
 	# echo "${record_identifiers[$record_count]}"
 	((record_count++))
 done
-speedqueue=$((record_count + speedqueue_max)) #自定义测速队列，多测2条做冗余
+speedqueue=$((ips + speedqueue_max)) #自定义测速队列，多测2条做冗余
 
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
 ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tlr $lossmax -p 0 -sl $speedlower -o $result_csv
