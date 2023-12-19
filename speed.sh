@@ -483,11 +483,9 @@ record_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$
     TGtext0="$TGtext0%0A$TGtext"
     record_count=$(($record_count-1))    #二级域名序号递减
     if [ $record_count -eq 0 ]; then
+        TGmessage "ACFST_DDNS更新完成！%0A地区:$record_name 	端口:$port $TGtext0"
         break
     fi
 
 done
 
-if [ "$record_count" -lt "$ips0" ]; then
-  TGmessage "ACFST_DDNS更新完成！%0A地区:$record_name 	端口:$port $TGtext0"
-fi
