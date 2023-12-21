@@ -286,6 +286,31 @@ echo "去重合并整理IP库完成"
 
 # 判断CFIPs是否为0
 if [ "$CFIPs" -eq 0 ]; then
+
+    # 检查pip3是否已经安装
+    if ! command -v pip3 &> /dev/null
+    then
+        echo 'pip3 is not installed, installing now'
+        sudo apt-get update
+        sudo apt-get install python3-pip -y
+    fi
+    
+    # 检查requests库是否已经安装
+    python3 -c "\
+    try:
+        import requests
+    except ImportError:
+        pass
+    else:
+        print('requests module is installed')
+    " &> /dev/null
+    
+    # 如果requests库没有安装，则自动安装
+    if [ $? -ne 0 ]; then
+        echo 'requests module is not installed, installing now'
+        $(which python3) -m pip install requests
+    fi
+
     # 如果RemoveCFIPs.py不存在，则从GitHub下载
     if [ ! -f RemoveCFIPs.py ]; then
         curl -k -O "${proxygithub}https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/RemoveCFIPs.py"
