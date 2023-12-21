@@ -8,6 +8,7 @@ zone_name="xxxx.com"     #你的主域名 *必填
 area_GEC="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
 port=443 #自定义测速端口 不能为空!!!
 ips=4    #获取更新IP的指定数量，默认为4 
+CFIPs=0    #如果是官方IP就设为1，第三方反代IP设为0
 
 speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长，过小会无法测出准确速度
 speedlower=10  #自定义下载速度下限,单位为mb/s
@@ -287,6 +288,21 @@ fi
 awk '!a[$0]++' ip_temp.txt > ip-${port}.txt
 rm ip_temp.txt
 echo "去重合并整理IP库完成"
+
+# 判断CFIPs是否为0
+if [ "$CFIPs" -eq 0 ]; then
+    # 如果RemoveCFIPs.py不存在，则从GitHub下载
+    if [ ! -f RemoveCFIPs.py ]; then
+        curl -k -O "${proxygithub}https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/RemoveCFIPs.py"
+    fi
+
+    # 如果下载成功，运行RemoveCFIPs.py
+    if [ -f RemoveCFIPs.py ]; then
+        python3 RemoveCFIPs.py ip-${port}.txt
+    else
+        echo "错误：RemoveCFIPs.py 未找到。"
+    fi
+fi
 
 # 检查ip-${port}.txt文件是否存在
 if [ -f "ip-${port}.txt" ]; then
