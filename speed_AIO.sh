@@ -445,7 +445,7 @@ if [ "$status" = "success" ]; then
     # 判断countryCode是否等于CN
     if [ "$countryCode" != "CN" ]; then
         echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络使用了代理，请关闭代理后重试。"
-        exit 1  # 在不是中国的情况下强行退出脚本
+        exit 0  # 在不是中国的情况下强行退出脚本
     else
         echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络未使用代理..."
     fi
