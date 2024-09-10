@@ -28,9 +28,3 @@ jobs:
         chmod +x speed_AIO.sh
         ./speed_AIO.sh
         
-    - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@v2
-      with:
-        retain_days: 0
-        keep_minimum_runs: 5
-        
