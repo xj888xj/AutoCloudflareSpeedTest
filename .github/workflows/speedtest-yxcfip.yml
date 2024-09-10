@@ -1,4 +1,4 @@
-name: speedtest yxcfip
+name: speedtest-yxcfip
 
 on:
   workflow_dispatch:  # 手动触发
