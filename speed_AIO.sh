@@ -1,9 +1,9 @@
 #!/bin/bash
 # $ ./speed.sh hk 443 4 xxxx.com xxxx@gmail.com xxxxxxxxxxxxxxx https://vipcs.cloudflarest.link
 export LANG=zh_CN.UTF-8
-auth_email=os.environ.get("AUTH_EMAIL")    #你的CloudFlare注册账户邮箱 *必填
-auth_key=os.environ.get("AUTH_KEY")   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
-zone_name=os.environ.get("ZONE_NAME")    #你的主域名 *必填
+auth_email="os.environ.get("AUTH_EMAIL")"    #你的CloudFlare注册账户邮箱 *必填
+auth_key="os.environ.get("AUTH_KEY")"   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
+zone_name="os.environ.get("ZONE_NAME")"    #你的主域名 *必填
 
 area_GEC="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
 port=443 #自定义测速端口 不能为空!!!
@@ -15,8 +15,8 @@ speedlower=10  #自定义下载速度下限,单位为mb/s
 lossmax=0.75  #自定义丢包几率上限；只输出低于/等于指定丢包率的 IP，范围 0.00~1.00，0 过滤掉任何丢包的 IP
 speedqueue_max=1 #自定义测速IP冗余量
 
-telegramBotUserId = os.getenv('TELEGRAM_CHAT_ID') # telegram UserId
-telegramBotToken = os.getenv('TELEGRAM_BOT_TOKEN') #telegram BotToken https://t.me/ACFST_DDNS_bot
+telegramBotUserId="os.getenv('TELEGRAM_CHAT_ID')" # telegram UserId
+telegramBotToken="os.getenv('TELEGRAM_BOT_TOKEN')" #telegram BotToken https://t.me/ACFST_DDNS_bot
 telegramBotAPI="api.telegram.ssrc.cf" #telegram 推送API,留空将启用官方API接口:api.telegram.org
 
 githubID="xj888xj" #自用IP库，也可以换成你自己的github仓库，且仓库名必须是"cloudflare-better-ip" 可自行Fork修改 https://github.com/cmliu/cloudflare-better-ip
