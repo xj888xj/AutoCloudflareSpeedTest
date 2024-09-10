@@ -137,15 +137,15 @@ if [ ! -f "/usr/share/GeoIP/GeoLite2-Country.mmdb" ]; then
 	echo "文件 /usr/share/GeoIP/GeoLite2-Country.mmdb 不存在。正在下载..."
 	
 	# 使用curl命令下载文件
-	wget /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://raw.githubusercontent.com/xj888xj/AutoCloudflareSpeedTest/main/GeoLite2-Country.mmdb"
+	wget /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://github.com/P3TERX/GeoLite.mmdb/releases/download/$geoiplookup_latest_version/GeoLite2-Country.mmdb"
 	
-	# 检查下载是否成功
-	if [ $? -eq 0 ]; then
-		echo "下载完成。"
-	else
-		echo "下载失败。脚本终止。"
-		exit 1
-	fi
+#	# 检查下载是否成功
+#	if [ $? -eq 0 ]; then
+#		echo "下载完成。"
+#	else
+#		echo "下载失败。脚本终止。"
+#		exit 1
+#	fi
 fi
 
 # 检测是否已经安装了mmdb-bin
