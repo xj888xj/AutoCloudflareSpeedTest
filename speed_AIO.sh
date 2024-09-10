@@ -343,7 +343,7 @@ if [ -f "ip-${port}.txt" ]; then
 		echo "清理IP地区文件完成。"
 	else
 		echo "创建IP地区文件。"
-		mkdir -p ip
+		sudo mkdir -p ip
 	fi
 
 echo "正在将IP按国家代码保存到ip文件夹内..."
