@@ -19,7 +19,7 @@ telegramBotUserId="os.getenv('TELEGRAM_CHAT_ID')" # telegram UserId
 telegramBotToken="os.getenv('TELEGRAM_BOT_TOKEN')" #telegram BotToken https://t.me/ACFST_DDNS_bot
 telegramBotAPI="api.telegram.ssrc.cf" #telegram 推送API,留空将启用官方API接口:api.telegram.org
 
-githubID="xj888xj" #自用IP库，也可以换成你自己的github仓库，且仓库名必须是"cloudflare-better-ip" 可自行Fork修改 https://github.com/cmliu/cloudflare-better-ip
+githubID="xj888xj" #自用IP库，也可以换成你自己的github仓库，且仓库名必须是"cloudflare-better-ip" 可自行Fork修改 https://github.com/xj888xj/cloudflare-better-ip
 ###############################################################以下脚本内容，勿动#######################################################################
 speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
 proxygithub="https://mirror.ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://mirror.ghproxy.com/"
@@ -137,7 +137,7 @@ if [ ! -f "/usr/share/GeoIP/GeoLite2-Country.mmdb" ]; then
     echo "文件 /usr/share/GeoIP/GeoLite2-Country.mmdb 不存在。正在下载..."
     
     # 使用curl命令下载文件
-    curl -L -o /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/GeoLite2-Country.mmdb"
+    curl -L -o /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://raw.githubusercontent.com/xj888xj/AutoCloudflareSpeedTest/main/GeoLite2-Country.mmdb"
     
     # 检查下载是否成功
     if [ $? -eq 0 ]; then
@@ -246,7 +246,7 @@ if [ -n "$githubID" ]; then
 	echo "验证更新${githubID} IP库"
 	git clone "${proxygithub}https://github.com/${githubID}/cloudflare-better-ip.git"
 	
-	# 检查cmliu/cloudflare-better-ip/cloudflare内是否有文件
+	# 检查xj888xj/cloudflare-better-ip/cloudflare内是否有文件
 	if [ -d "cloudflare-better-ip" ] && [ -n "$(ls -A cloudflare-better-ip)" ]; then
 	    echo "正在更新${githubID} IP库"
 	    # 复制cloudflare-better-ip内的文件到temp文件夹
@@ -276,7 +276,7 @@ if [ -e "Domain.txt" ] && { [ "$port" -eq 443 ] || [ "$port" -eq 80 ]; }; then
   if [ -e "Domain2IP.py" ]; then
     python3 Domain2IP.py
   else
-    curl -k -O "${proxygithub}https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/Domain2IP.py"
+    curl -k -O "${proxygithub}https://raw.githubusercontent.com/xj888xj/AutoCloudflareSpeedTest/main/Domain2IP.py"
     if [ $? -eq 0 ]; then
       python3 Domain2IP.py
     fi
@@ -322,7 +322,7 @@ if [ "$CFIPs" -eq 0 ]; then
 
     # 如果RemoveCFIPs.py不存在，则从GitHub下载
     if [ ! -f RemoveCFIPs.py ]; then
-        curl -k -O "${proxygithub}https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/RemoveCFIPs.py"
+        curl -k -O "${proxygithub}https://raw.githubusercontent.com/xj888xj/AutoCloudflareSpeedTest/main/RemoveCFIPs.py"
     fi
 
     # 如果下载成功，运行RemoveCFIPs.py
@@ -468,7 +468,7 @@ for identifier in "${record_identifiers[@]}"; do
 done
 speedqueue=$((ips + speedqueue_max)) #自定义测速队列，多测2条做冗余
 
-#./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
+#./CloudflareST -tp 443 -url "https://cs.xj888xjssss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
 ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tlr $lossmax -p 0 -sl $speedlower -o $result_csv
 
 if [ "$record_count" -gt 0 ]; then
