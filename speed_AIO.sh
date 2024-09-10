@@ -435,23 +435,23 @@ local_IP_geo=$(curl -s http://ip-api.com/json/${local_IP}?lang=zh-CN)
 # 使用jq解析JSON响应并提取所需的信息
 status=$(echo "$local_IP_geo" | jq -r '.status')
 
-if [ "$status" = "success" ]; then
-    countryCode=$(echo "$local_IP_geo" | jq -r '.countryCode')
-    country=$(echo "$local_IP_geo" | jq -r '.country')
-    regionName=$(echo "$local_IP_geo" | jq -r '.regionName')
-    city=$(echo "$local_IP_geo" | jq -r '.city')
-    # 如果status等于success，则显示地址信息
-    # echo "您的地址是 ${country}${regionName}${city}"
-    # 判断countryCode是否等于CN
-    if [ "$countryCode" != "CN" ]; then
-        echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络使用了代理，请关闭代理后重试。"
-        exit 0  # 在不是中国的情况下强行退出脚本
-    else
-        echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络未使用代理..."
-    fi
-else
-    echo "你的IP地址是 $local_IP 地址判断请求失败，请自行确认为本机网络未使用代理..."
-fi
+#if [ "$status" = "success" ]; then
+#    countryCode=$(echo "$local_IP_geo" | jq -r '.countryCode')
+#    country=$(echo "$local_IP_geo" | jq -r '.country')
+#    regionName=$(echo "$local_IP_geo" | jq -r '.regionName')
+#    city=$(echo "$local_IP_geo" | jq -r '.city')
+#    # 如果status等于success，则显示地址信息
+#    # echo "您的地址是 ${country}${regionName}${city}"
+#    # 判断countryCode是否等于CN
+#    if [ "$countryCode" != "CN" ]; then
+#        echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络使用了代理，请关闭代理后重试。"
+#        exit 0  # 在不是中国的情况下强行退出脚本
+#    else
+#        echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络未使用代理..."
+#    fi
+#else
+#    echo "你的IP地址是 $local_IP 地址判断请求失败，请自行确认为本机网络未使用代理..."
+#fi
 
 echo "待处理域名 ${record_name}.${zone_name} （如您使用的是443端口的话，准备域名无需标注端口号。）"
 
