@@ -1,9 +1,9 @@
 #!/bin/bash
 # $ ./speed.sh hk 443 4 xxxx.com xxxx@gmail.com xxxxxxxxxxxxxxx https://vipcs.cloudflarest.link
 export LANG=zh_CN.UTF-8
-auth_email = os.environ.get("AUTH_EMAIL")    #你的CloudFlare注册账户邮箱 *必填
-auth_key = os.environ.get("AUTH_KEY")   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
-zone_name = os.environ.get("ZONE_NAME")    #你的主域名 *必填
+auth_email=os.environ.get("AUTH_EMAIL")    #你的CloudFlare注册账户邮箱 *必填
+auth_key=os.environ.get("AUTH_KEY")   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
+zone_name=os.environ.get("ZONE_NAME")    #你的主域名 *必填
 
 area_GEC="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
 port=443 #自定义测速端口 不能为空!!!
