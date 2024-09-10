@@ -26,6 +26,6 @@ jobs:
     - name: Run shell script
       run: |
         chmod +x speed_AIO.sh
-        su
+        sudo su -
         ./speed_AIO.sh
         
