@@ -1,0 +1,33 @@
+name: speedtest yxcfip
+
+on:
+  workflow_dispatch:  # 手动触发
+  schedule:
+    - cron: '0 8,20 * * *'  # 每12小时运行一次，可以根据需求调整
+
+jobs:
+  ip-speed-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y curl && sudo apt-get install -y bash
+
+    - name: Run shell script
+      run: |
+        chmod +x speed_AIO.sh
+        ./speed_AIO.sh
+
