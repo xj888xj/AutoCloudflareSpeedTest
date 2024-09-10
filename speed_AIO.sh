@@ -22,7 +22,7 @@ telegramBotAPI="api.telegram.ssrc.cf" #telegram 推送API,留空将启用官方A
 githubID="xj888xj" #自用IP库，也可以换成你自己的github仓库，且仓库名必须是"cloudflare-better-ip" 可自行Fork修改 https://github.com/xj888xj/cloudflare-better-ip
 ###############################################################以下脚本内容，勿动#######################################################################
 speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
-proxygithub="https://mirror.ghproxy.com/" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://mirror.ghproxy.com/"
+proxygithub="" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://mirror.ghproxy.com/"
 CloudFlareIP_password=""
 #带有地区参数，将赋值第1参数为地区
 if [ -n "$1" ]; then 
