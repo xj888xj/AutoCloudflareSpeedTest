@@ -147,7 +147,7 @@ fi
 #		exit 1
 #	fi
 #fi
-
+cp GeoLite2-Country.mmdb /usr/share/GeoIP/GeoLite2-Country.mmdb
 # 检测是否已经安装了mmdb-bin
 if ! command -v mmdblookup &> /dev/null; then
     echo "mmdblookup 未安装，开始安装..."
