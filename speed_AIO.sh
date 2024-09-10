@@ -113,10 +113,10 @@ fi
 # 更新geoiplookup IP库
 download_GeoLite_mmdb() {
 	# 发送 API 请求获取仓库信息（替换 <username> 和 <repo>）
-	geoiplookup_latest_version=$(curl -s https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+	geoiplookup_latest_version=$(curl -s https://api.github.com/PrxyHunter/GeoLite2/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 	echo "最新版本号: $geoiplookup_latest_version"
 	# 下载文件到当前目录
-	curl -L -o /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://github.com/P3TERX/GeoLite.mmdb/releases/download/$geoiplookup_latest_version/GeoLite2-Country.mmdb"
+	curl -L -o /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://github.com/PrxyHunter/GeoLite2/releases/download/$geoiplookup_latest_version/GeoLite2-Country.mmdb"
 }
 
 # 检测是否已经安装了geoiplookup
@@ -162,7 +162,7 @@ download_CloudflareST() {
     # 发送 API 请求获取仓库信息（替换 <username> 和 <repo>）
     latest_version=$(curl -s https://api.github.com/repos/XIU2/CloudflareSpeedTest/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     if [ -z "$latest_version" ]; then
-    	latest_version="v2.2.4"
+    	latest_version="v2.2.5"
     	echo "下载版本号: $latest_version"
     else
     	echo "最新版本号: $latest_version"
