@@ -32,7 +32,12 @@ jobs:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}         
       run: |
         chmod +x speed_AIO.sh
-        sudo ./speed_AIO.sh      
+        sudo ./speed_AIO.sh hk                    #测速默认香港地区,默认端口443,修改域名为默认    hk.xxxx.com
+        sudo ./speed_AIO.sh us                    #测速默认美国地区,默认端口443,修改域名为默认    us.xxxx.com
+        sudo ./speed_AIO.sh kr                    #测速韩国地区,默认端口443,修改域名为默认        kr.xxxx.com
+        sudo ./speed_AIO.sh jp                    #测速日本地区,默认端口443,修改域名为默认        jp.xxxx.com自定义端口8443,修改域名为默认     jp-8443.xxxx.com 6条IP记录
+        sudo ./speed_AIO.sh sg                    #测速新加坡地区,默认端口443,修改域名为默认      sg.xxxx.com自定义端口2096,修改自定义域名为   sg-2096.google.com 8条IP记录
+        
     - uses: stefanzweifel/git-auto-commit-action@v5
 
 
