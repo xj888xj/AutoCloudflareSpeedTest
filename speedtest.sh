@@ -168,5 +168,3 @@ fi
 #CloudflareST测试
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
 sudo ./CloudflareST -tp 443 -url $speedurl -f ip.txt -dn 10 -tl 280 -tll 40 -tlr 0 -sl 10 -o result.csv
-
-done
