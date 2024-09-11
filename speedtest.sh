@@ -1,9 +1,6 @@
 #!/bin/bash
 # $ ./speed.sh hk 443 4 xxxx.com xxxx@gmail.com xxxxxxxxxxxxxxx https://vipcs.cloudflarest.link
 export LANG=zh_CN.UTF-8
-
-speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长，过小会无法测出准确速度
-speedurl="https://speed.cloudflare.com/__down?bytes=$((speedtestMB * 1000000))" #官方测速链接
 proxygithub="" #反代github加速地址，如果不需要可以将引号内容删除，如需修改请确保/结尾 例如"https://mirror.ghproxy.com/"
 
 # 选择客户端 CPU 架构
@@ -167,4 +164,4 @@ fi
 
 #CloudflareST测试
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
-sudo ./CloudflareST -tp 443 -url $speedurl -f ip.txt -dn 10 -tl 280 -tll 40 -tlr 0 -sl 10 -o result.csv
+sudo ./CloudflareST -tp 443 -url https://spurl.api.030101.xyz/50mb -dn 10 -tl 280 -tll 40 -tlr 0 -sl 10 -f ip.txt -o result.csv
