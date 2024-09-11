@@ -1,0 +1,40 @@
+name: cloudflareST-yxcfip
+
+on:
+  workflow_dispatch:  # 手动触发
+  schedule:
+    - cron: '0 8,20 * * *'  # 每12小时运行一次，可以根据需求调整
+
+jobs:
+  ip-speed-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@main
+
+    - name: Set up Python
+      uses: actions/setup-python@main
+      with:
+        python-version: '3.x'
+        
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests        
+
+    - name: Run shell script
+      env:
+        AUTH_EMAIL: ${{ secrets.AUTH_EMAIL }}
+        AUTH_KEY: ${{ secrets.AUTH_KEY }}
+        ZONE_NAME: ${{ secrets.ZONE_NAME }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }} 
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}         
+      run: |
+        chmod +x speedtest.sh
+        sudo ./speedtest.sh     
+    - uses: stefanzweifel/git-auto-commit-action@v5
+
+
+   
+        
