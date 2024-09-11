@@ -1,6 +1,6 @@
 # AutoCloudflareSpeedTest 
 
-这是一个自动测速CF优选IP后将IP更新至CF域名A记录的自动化脚本
+这是一个自动测速CF优选IP的自动化脚本
 
 测试运行环境ubuntu-18.04-standard_18.04.1-1_amd64
 
