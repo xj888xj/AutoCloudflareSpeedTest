@@ -351,9 +351,9 @@ echo "正在将IP按国家代码保存到ip文件夹内..."
     while read -r line; do
         ip=$(echo $line | cut -d ' ' -f 1)  # 提取IP地址部分
 		
-        #country_code=$(geoiplookup $ip | awk -F ', ' '{print $1}')  # 获取国家代码
+        country_code=$(geoiplookup $ip | awk -F ', ' '{print $1}')  # 获取国家代码
 		
-		#mmdblookup --file /usr/share/GeoIP/GeoLite2-Country.mmdb  --ip 8.8.8.8 country iso_code
+		mmdblookup --file /usr/share/GeoIP/GeoLite2-Country.mmdb  --ip 8.8.8.8 country iso_code
 		result=$(mmdblookup --file /usr/share/GeoIP/GeoLite2-Country.mmdb --ip $ip country iso_code)
 		country_code=$(echo $result | awk -F '"' '{print $2}')
 		sudo echo $ip >> "ip/${country_code}-${port}.txt"  # 写入对应的国家文件
