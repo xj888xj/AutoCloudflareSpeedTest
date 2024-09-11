@@ -469,7 +469,7 @@ done
 speedqueue=$((ips + speedqueue_max)) #自定义测速队列，多测2条做冗余
 
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
-sudo ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tlr $lossmax -p 0 -sl $speedlower -o $result_csv
+sudo ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tll 30 -tlr $lossmax -p 0 -sl $speedlower -o $result_csv
 
 if [ "$record_count" -gt 0 ]; then
   for record_id in "${record_identifiers[@]}"; do
