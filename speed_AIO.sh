@@ -356,8 +356,8 @@ echo "正在将IP按国家代码保存到ip文件夹内..."
 		#mmdblookup --file /usr/share/GeoIP/GeoLite2-Country.mmdb  --ip 8.8.8.8 country iso_code
 		result=$(mmdblookup --file /usr/share/GeoIP/GeoLite2-Country.mmdb --ip $ip country iso_code)
 		country_code=$(echo $result | awk -F '"' '{print $2}')
-		sudo sh -c echo $ip >> "ip/${country_code}-${port}.txt"  # 写入对应的国家文件
-    done < ip-${port}.txt
+		sudo echo $ip >> "ip/${country_code}-${port}.txt"  # 写入对应的国家文件
+    sudo done < ip-${port}.txt
 
     echo "IP已按国家分类保存到ip文件夹内。"
 else
