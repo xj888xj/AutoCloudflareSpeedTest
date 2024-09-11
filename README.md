@@ -1,5 +1,4 @@
 # AutoCloudflareSpeedTest 
-白嫖总得来说不好，请不要公开传播，项目热度太高就删库
 
 这是一个自动测速CF优选IP后将IP更新至CF域名A记录的自动化脚本
 
