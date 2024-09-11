@@ -26,8 +26,8 @@ jobs:
     - name: Run shell script
       run: |
         wget -N -P cs https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/speed_AIO.sh && cd cs && chmod +x speed_AIO.sh 
-        sudo #sh speed_AIO.sh [测速国家代码] [端口] [IP数量] [主域名] [CloudFlare账户邮箱] [CloudFlare账户key] [自定义测速地址]
+        #sudo sh speed_AIO.sh [测速国家代码] [端口] [IP数量] [主域名] [CloudFlare账户邮箱] [CloudFlare账户key] [自定义测速地址]
         sudo sh speed_AIO.sh                       #测速默认香港地区,默认端口443,修改域名为默认    hk.xxxx.com
         sudo sh speed_AIO.sh kr                    #测速韩国地区,默认端口443,修改域名为默认        kr.xxxx.com
         sudo sh speed_AIO.sh jp 8443 6             #测速日本地区,自定义端口8443,修改域名为默认     jp-8443.xxxx.com 6条IP记录
-        sudo #sh speed_AIO.sh jp 2096 8 google.com  #测速日本地区,自定义端口2096,修改自定义域名为     jp-2096.google.com 8条IP记录
+        #sudo sh speed_AIO.sh jp 2096 8 google.com  #测速日本地区,自定义端口2096,修改自定义域名为     jp-2096.google.com 8条IP记录
