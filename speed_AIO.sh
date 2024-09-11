@@ -1,9 +1,9 @@
 #!/bin/bash
 # $ ./speed.sh hk 443 4 xxxx.com xxxx@gmail.com xxxxxxxxxxxxxxx https://vipcs.cloudflarest.link
 export LANG=zh_CN.UTF-8
-auth_email=$AUTH_EMAIL    #你的CloudFlare注册账户邮箱 *必填
-auth_key=$AUTH_KEY   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
-zone_name=$ZONE_NAME    #你的主域名 *必填
+#auth_email=$AUTH_EMAIL    #你的CloudFlare注册账户邮箱 *必填
+#auth_key=$AUTH_KEY   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
+#zone_name=$ZONE_NAME    #你的主域名 *必填
 
 area_GEC="hk"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
 port=443 #自定义测速端口 不能为空!!!
@@ -15,9 +15,9 @@ speedlower=10  #自定义下载速度下限,单位为mb/s
 lossmax=0.75  #自定义丢包几率上限；只输出低于/等于指定丢包率的 IP，范围 0.00~1.00，0 过滤掉任何丢包的 IP
 speedqueue_max=1 #自定义测速IP冗余量
 
-telegramBotUserId=$TELEGRAM_CHAT_ID # telegram UserId
-telegramBotToken=$TELEGRAM_BOT_TOKEN #telegram BotToken https://t.me/ACFST_DDNS_bot
-telegramBotAPI="" #telegram 推送API,留空将启用官方API接口:api.telegram.org #api.telegram.ssrc.cf
+#telegramBotUserId=$TELEGRAM_CHAT_ID # telegram UserId
+#telegramBotToken=$TELEGRAM_BOT_TOKEN #telegram BotToken https://t.me/ACFST_DDNS_bot
+#telegramBotAPI="" #telegram 推送API,留空将启用官方API接口:api.telegram.org #api.telegram.ssrc.cf
 
 githubID="xj888xj" #自用IP库，也可以换成你自己的github仓库，且仓库名必须是"cloudflare-better-ip" 可自行Fork修改 https://github.com/xj888xj/cloudflare-better-ip
 ###############################################################以下脚本内容，勿动#######################################################################
@@ -176,7 +176,7 @@ download_CloudflareST() {
 }
 
 # 尝试次数
-max_attempts=5
+max_attempts=3
 current_attempt=1
 
 while [ $current_attempt -le $max_attempts ]; do
@@ -445,7 +445,7 @@ status=$(echo "$local_IP_geo" | jq -r '.status')
 #    # 判断countryCode是否等于CN
 #    if [ "$countryCode" != "CN" ]; then
 #        echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络使用了代理，请关闭代理后重试。"
-#        exit 0  # 在不是中国的情况下强行退出脚本
+#        exit 1  # 在不是中国的情况下强行退出脚本
 #    else
 #        echo "你的IP地址是 $local_IP ${country}${regionName}${city} 经确认本机网络未使用代理..."
 #    fi
@@ -453,102 +453,102 @@ status=$(echo "$local_IP_geo" | jq -r '.status')
 #    echo "你的IP地址是 $local_IP 地址判断请求失败，请自行确认为本机网络未使用代理..."
 #fi
 
-echo "待处理域名 ${record_name}.${zone_name} （如您使用的是443端口的话，准备域名无需标注端口号。）"
-
-record_type="A"     
-#获取zone_id、record_id
-zone_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
-# echo $zone_identifier
-readarray -t record_identifiers < <(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name.$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*')
-
-record_count=0
-for identifier in "${record_identifiers[@]}"; do
-	# echo "${record_identifiers[$record_count]}"
-	((record_count++))
-done
+#echo "待处理域名 ${record_name}.${zone_name} （如您使用的是443端口的话，准备域名无需标注端口号。）"
+#
+#record_type="A"     
+##获取zone_id、record_id
+#zone_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
+## echo $zone_identifier
+#readarray -t record_identifiers < <(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name.$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*')
+#
+#record_count=0
+#for identifier in "${record_identifiers[@]}"; do
+#	# echo "${record_identifiers[$record_count]}"
+#	((record_count++))
+#done
 speedqueue=$((ips + speedqueue_max)) #自定义测速队列，多测2条做冗余
 
 #./CloudflareST -tp 443 -url "https://cs.cmliussss.link" -f "ip/HK.txt" -dn 128 -tl 260 -p 0 -o "log/HK.csv"
 sudo ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tll 30 -tlr $lossmax -sl $speedlower -o $result_csv
 
-if [ "$record_count" -gt 0 ]; then
-  for record_id in "${record_identifiers[@]}"; do
-
-	# 执行 curl 命令并将结果保存到变量
-	result=$(curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records/${record_id}" \
-		 -H "X-Auth-Email: ${auth_email}" \
-		 -H "X-Auth-Key: ${auth_key}" \
-		 -H "Content-Type: application/json")
-
-	# 提取 success 字段的值
-	success=$(echo "${result}" | jq -r '.success')
-
-	# 判断 success 的值并输出相应的提示
-	if [ "${success}" == "true" ]; then
-		echo "$record_name.$zone_name 删除成功"
-	else
-		echo "$record_name.$zone_name 删除失败"
-	fi
-    # 可以在这里添加适当的等待时间，以避免对 API 的过多请求
-    sleep 1
-  done
-fi
-
-#exit 1
-ips0=$ips
-TGtext0=""
-sed -n '2,20p' $result_csv | while read line
-do
-
-    # 初始化尝试次数
-    attempt=0
-    
-    # 更新DNS记录
-    while [[ $attempt -lt 3 ]]
-    do
-	
-		# 执行 curl 命令并将结果保存到变量
-		result=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records" \
-			 -H "X-Auth-Email: ${auth_email}" \
-			 -H "X-Auth-Key: ${auth_key}" \
-			 -H "Content-Type: application/json" \
-			 --data '{
-			   "type": "'"${record_type}"'",
-			   "name": "'"${record_name}"'.'"${zone_name}"'",
-			   "content": "'"${line%%,*}"'",
-			   "ttl": 60,
-			   "proxied": false
-			 }')
-
-		# 提取 success 字段的值
-		success=$(echo "${result}" | jq -r '.success')
-
-		# 判断 success 的值并输出相应的提示
-		if [ "${success}" == "true" ]; then
-		    TGtext=$record_name'.'$zone_name' 更新成功: '${line%%,*}
-			echo $TGtext
-			break
-			echo "创建成功"
-		else
-
-			# 输出 messages 内容
-			messages=$(echo "${result}" | jq -r '.messages | join(", ")')
-			#echo "错误信息: ${messages}"
-			
-			TGtext=$record_name'.'$zone_name' 更新失败: '${messages}
-			echo $TGtext
-			attempt=$(( $attempt + 1 ))
-			echo "尝试次数: $attempt, 1分钟后将再次尝试更新..."
-			sleep 60
-		fi
-
-    done
-    
-    TGtext0="$TGtext0%0A$TGtext"
-    ips=$(($ips-1))    #二级域名序号递减
-    if [ $ips -eq 0 ]; then
-        TGmessage "ACFST_DDNS更新完成！%0A地区:$record_name 	端口:$port $TGtext0"
-        break
-    fi
-
+#if [ "$record_count" -gt 0 ]; then
+#  for record_id in "${record_identifiers[@]}"; do
+#
+#	# 执行 curl 命令并将结果保存到变量
+#	result=$(curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records/${record_id}" \
+#		 -H "X-Auth-Email: ${auth_email}" \
+#		 -H "X-Auth-Key: ${auth_key}" \
+#		 -H "Content-Type: application/json")
+#
+#	# 提取 success 字段的值
+#	success=$(echo "${result}" | jq -r '.success')
+#
+#	# 判断 success 的值并输出相应的提示
+#	if [ "${success}" == "true" ]; then
+#		echo "$record_name.$zone_name 删除成功"
+#	else
+#		echo "$record_name.$zone_name 删除失败"
+#	fi
+#    # 可以在这里添加适当的等待时间，以避免对 API 的过多请求
+#    sleep 1
+#  done
+#fi
+#
+##exit 1
+#ips0=$ips
+#TGtext0=""
+#sed -n '2,20p' $result_csv | while read line
+#do
+#
+#    # 初始化尝试次数
+#    attempt=0
+#    
+#    # 更新DNS记录
+#    while [[ $attempt -lt 3 ]]
+#    do
+#	
+#		# 执行 curl 命令并将结果保存到变量
+#		result=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records" \
+#			 -H "X-Auth-Email: ${auth_email}" \
+#			 -H "X-Auth-Key: ${auth_key}" \
+#			 -H "Content-Type: application/json" \
+#			 --data '{
+#			   "type": "'"${record_type}"'",
+#			   "name": "'"${record_name}"'.'"${zone_name}"'",
+#			   "content": "'"${line%%,*}"'",
+#			   "ttl": 60,
+#			   "proxied": false
+#			 }')
+#
+#		# 提取 success 字段的值
+#		success=$(echo "${result}" | jq -r '.success')
+#
+#		# 判断 success 的值并输出相应的提示
+#		if [ "${success}" == "true" ]; then
+#		    TGtext=$record_name'.'$zone_name' 更新成功: '${line%%,*}
+#			echo $TGtext
+#			break
+#			echo "创建成功"
+#		else
+#
+#			# 输出 messages 内容
+#			messages=$(echo "${result}" | jq -r '.messages | join(", ")')
+#			#echo "错误信息: ${messages}"
+#			
+#			TGtext=$record_name'.'$zone_name' 更新失败: '${messages}
+#			echo $TGtext
+#			attempt=$(( $attempt + 1 ))
+#			echo "尝试次数: $attempt, 20分钟后将再次尝试更新..."
+#			sleep 20
+#		fi
+#
+#    done
+#    
+#    TGtext0="$TGtext0%0A$TGtext"
+#    ips=$(($ips-1))    #二级域名序号递减
+#    if [ $ips -eq 0 ]; then
+#        TGmessage "ACFST_DDNS更新完成！%0A地区:$record_name 	端口:$port $TGtext0"
+#        break
+#    fi
+#
 done
