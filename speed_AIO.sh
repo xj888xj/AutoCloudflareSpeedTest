@@ -551,4 +551,4 @@ sudo ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 
 #        break
 #    fi
 #
-done
+#done
