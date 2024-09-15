@@ -1,0 +1,195 @@
+import csv
+import sys
+import requests
+###############################################################################################################################
+def get_location(ip):
+    try:
+        response = requests.get(f'http://ip-api.com/json/{ip}')
+        data = response.json()
+        if data['status'] == 'success':
+            return data['countryCode']
+        else:
+            return None
+    except requests.RequestException as e:
+        print(f"Error getting location for IP {ip}: {e}")
+        return None
+
+def convert_csv_to_tls(csv_filename, TLS, notls=False):
+    output_filename = 'log/SG-443.txt'
+    with open(csv_filename, 'r', encoding='utf-8') as infile, open(output_filename, 'w', encoding='utf-8') as outfile:
+        reader = csv.reader(infile)
+        next(reader)  # Skip header row
+        for row in reader:
+            ip = row[0]
+            countryCode = get_location(ip)
+            if countryCode:
+                variable = f"[{countryCode}]"
+            else:
+                variable = "[位置获取失败]"
+
+            if notls:
+                formatted_ip = f"{ip}"
+            else:
+                formatted_ip = f"{ip}"
+
+            outfile.write(formatted_ip + '\n')
+
+if __name__ == "__main__":
+    csv_filename = 'log/SG-443.csv'
+    TLS = 'log/SG-443.txt'
+    notls = False if len(sys.argv) < 2 else 'notls.txt'
+    convert_csv_to_tls(csv_filename, TLS, notls)
+###############################################################################################################################
+def get_location(ip):
+    try:
+        response = requests.get(f'http://ip-api.com/json/{ip}')
+        data = response.json()
+        if data['status'] == 'success':
+            return data['countryCode']
+        else:
+            return None
+    except requests.RequestException as e:
+        print(f"Error getting location for IP {ip}: {e}")
+        return None
+
+def convert_csv_to_tls(csv_filename, TLS, notls=False):
+    output_filename = 'log/US-443.txt'
+    with open(csv_filename, 'r', encoding='utf-8') as infile, open(output_filename, 'w', encoding='utf-8') as outfile:
+        reader = csv.reader(infile)
+        next(reader)  # Skip header row
+        for row in reader:
+            ip = row[0]
+            countryCode = get_location(ip)
+            if countryCode:
+                variable = f"[{countryCode}]"
+            else:
+                variable = "[位置获取失败]"
+
+            if notls:
+                formatted_ip = f"{ip}"
+            else:
+                formatted_ip = f"{ip}"
+
+            outfile.write(formatted_ip + '\n')
+
+if __name__ == "__main__":
+    csv_filename = 'log/US-443.csv'
+    TLS = 'log/US-443.txt'
+    notls = False if len(sys.argv) < 2 else 'notls.txt'
+    convert_csv_to_tls(csv_filename, TLS, notls)
+###############################################################################################################################
+def get_location(ip):
+    try:
+        response = requests.get(f'http://ip-api.com/json/{ip}')
+        data = response.json()
+        if data['status'] == 'success':
+            return data['countryCode']
+        else:
+            return None
+    except requests.RequestException as e:
+        print(f"Error getting location for IP {ip}: {e}")
+        return None
+
+def convert_csv_to_tls(csv_filename, TLS, notls=False):
+    output_filename = 'log/KR-443.txt'
+    with open(csv_filename, 'r', encoding='utf-8') as infile, open(output_filename, 'w', encoding='utf-8') as outfile:
+        reader = csv.reader(infile)
+        next(reader)  # Skip header row
+        for row in reader:
+            ip = row[0]
+            countryCode = get_location(ip)
+            if countryCode:
+                variable = f"[{countryCode}]"
+            else:
+                variable = "[位置获取失败]"
+
+            if notls:
+                formatted_ip = f"{ip}"
+            else:
+                formatted_ip = f"{ip}"
+
+            outfile.write(formatted_ip + '\n')
+
+if __name__ == "__main__":
+    csv_filename = 'log/KR-443.csv'
+    TLS = 'log/KR-443.txt'
+    notls = False if len(sys.argv) < 2 else 'notls.txt'
+    convert_csv_to_tls(csv_filename, TLS, notls)
+###############################################################################################################################
+def get_location(ip):
+    try:
+        response = requests.get(f'http://ip-api.com/json/{ip}')
+        data = response.json()
+        if data['status'] == 'success':
+            return data['countryCode']
+        else:
+            return None
+    except requests.RequestException as e:
+        print(f"Error getting location for IP {ip}: {e}")
+        return None
+
+def convert_csv_to_tls(csv_filename, TLS, notls=False):
+    output_filename = 'log/JP-443.txt'
+    with open(csv_filename, 'r', encoding='utf-8') as infile, open(output_filename, 'w', encoding='utf-8') as outfile:
+        reader = csv.reader(infile)
+        next(reader)  # Skip header row
+        for row in reader:
+            ip = row[0]
+            countryCode = get_location(ip)
+            if countryCode:
+                variable = f"[{countryCode}]"
+            else:
+                variable = "[位置获取失败]"
+
+            if notls:
+                formatted_ip = f"{ip}"
+            else:
+                formatted_ip = f"{ip}"
+
+            outfile.write(formatted_ip + '\n')
+
+if __name__ == "__main__":
+    csv_filename = 'log/JP-443.csv'
+    TLS = 'log/JP-443.txt'
+    notls = False if len(sys.argv) < 2 else 'notls.txt'
+    convert_csv_to_tls(csv_filename, TLS, notls)
+###############################################################################################################################
+def get_location(ip):
+    try:
+        response = requests.get(f'http://ip-api.com/json/{ip}')
+        data = response.json()
+        if data['status'] == 'success':
+            return data['countryCode']
+        else:
+            return None
+    except requests.RequestException as e:
+        print(f"Error getting location for IP {ip}: {e}")
+        return None
+
+def convert_csv_to_tls(csv_filename, TLS, notls=False):
+    output_filename = 'log/HK-443.txt'
+    with open(csv_filename, 'r', encoding='utf-8') as infile, open(output_filename, 'w', encoding='utf-8') as outfile:
+        reader = csv.reader(infile)
+        next(reader)  # Skip header row
+        for row in reader:
+            ip = row[0]
+            countryCode = get_location(ip)
+            if countryCode:
+                variable = f"[{countryCode}]"
+            else:
+                variable = "[位置获取失败]"
+
+            if notls:
+                formatted_ip = f"{ip}"
+            else:
+                formatted_ip = f"{ip}"
+
+            outfile.write(formatted_ip + '\n')
+
+if __name__ == "__main__":
+    csv_filename = 'log/HK-443.csv'
+    TLS = 'log/HK-443.txt'
+    notls = False if len(sys.argv) < 2 else 'notls.txt'
+    convert_csv_to_tls(csv_filename, TLS, notls)
+###############################################################################################################################
+    
