@@ -22,6 +22,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests        
+
     - name: Run shell script
       env:
         AUTH_EMAIL: ${{ secrets.AUTH_EMAIL }}
@@ -37,4 +38,16 @@ jobs:
         sudo ./speed_AIO.sh jp                    #测速日本地区,默认端口443,修改域名为默认        jp.xxxx.com自定义端口8443,修改域名为默认     jp-8443.xxxx.com 6条IP记录
         sudo ./speed_AIO.sh sg                    #测速新加坡地区,默认端口443,修改域名为默认      sg.xxxx.com自定义端口2096,修改自定义域名为   sg-2096.google.com 8条IP记录
         
+    - name: csv2txt
+      run: |
+        python csv2txt-HK.py
+        python csv2txt-SG.py 
+        python csv2txt-KR.py 
+        python csv2txt-US.py 
+        python csv2txt-JP.py         
+        
     - uses: stefanzweifel/git-auto-commit-action@v5
+
+
+   
+        
