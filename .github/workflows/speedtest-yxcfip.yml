@@ -40,14 +40,10 @@ jobs:
         
     - name: convert_csv_to_tls
       run: |
-        python convert_csv_to_tls.py-HK
-        python convert_csv_to_tls.py-SG 
-        python convert_csv_to_tls.py-KR 
-        python convert_csv_to_tls.py-US 
-        python convert_csv_to_tls.py-JP         
+        python convert_csv_to_tls-HK.py
+        python convert_csv_to_tls-SG.py 
+        python convert_csv_to_tls-KR.py 
+        python convert_csv_to_tls-US.py 
+        python convert_csv_to_tls-JP.py         
         
     - uses: stefanzweifel/git-auto-commit-action@v5
-
-
-   
-        
