@@ -38,6 +38,14 @@ jobs:
         sudo ./speed_AIO.sh jp                    #测速日本地区,默认端口443,修改域名为默认        jp.xxxx.com自定义端口8443,修改域名为默认     jp-8443.xxxx.com 6条IP记录
         sudo ./speed_AIO.sh sg                    #测速新加坡地区,默认端口443,修改域名为默认      sg.xxxx.com自定义端口2096,修改自定义域名为   sg-2096.google.com 8条IP记录
         
+    - name: convert_csv_to_tls
+      run: |
+        python convert_csv_to_tls.py-HK
+        python convert_csv_to_tls.py-SG 
+        python convert_csv_to_tls.py-KR 
+        python convert_csv_to_tls.py-US 
+        python convert_csv_to_tls.py-JP         
+        
     - uses: stefanzweifel/git-auto-commit-action@v5
 
 
