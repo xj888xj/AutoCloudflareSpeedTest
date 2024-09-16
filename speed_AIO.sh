@@ -187,4 +187,4 @@ fi
 
 speedqueue=$((ips + speedqueue_max))
 
-sudo ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tll 30 -tlr $lossmax -sl $speedlower -o
+sudo ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tll 30 -tlr $lossmax -sl $speedlower -o $result_csv
