@@ -204,52 +204,6 @@ if [ $current_attempt -gt $max_attempts ]; then
     exit 1
 fi
 
-# --- 主程序 ---
-echo "开始检查和更新 DNS 记录..."
-
-# 获取当前 IP 地址
-local_IP=$(curl -s 4.ipw.cn)
-
-# 获取 IP 地理位置信息
-local_IP_geo=$(curl -s http://ip-api.com/json/${local_IP}?lang=zh-CN)
-status=$(echo "$local_IP_geo" | jq -r '.status')
-
-if [ "$status" = "success" ]; then
-    countryCode=$(echo "$local_IP_geo" | jq -r '.countryCode')
-    country=$(echo "$local_IP_geo" | jq -r '.country')
-    regionName=$(echo "$local_IP_geo" | jq -r '.regionName')
-    city=$(echo "$local_IP_geo" | jq -r '.city')
-
-    if [ "$countryCode" != "CN" ]; then
-        echo "你的 IP 地址是 $local_IP ${country}${regionName}${city}，经确认本机网络使用了代理，请关闭代理后重试。"
-        exit 1
-    else
-        echo "你的 IP 地址是 $local_IP ${country}${regionName}${city}，经确认本机网络未使用代理..."
-    fi
-else
-    echo "你的 IP 地址是 $local_IP，地址判断请求失败，请自行确认为本机网络未使用代理..."
-fi
-
-echo "待处理域名 ${area_GEC}.${zone_name}"
-
-record_type="A"
-
-zone_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=$zone_name" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
-readarray -t record_identifiers < <(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=${area_GEC}.${zone_name}" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*')
-
-record_count=0
-for identifier in "${record_identifiers[@]}"; do
-	((record_count++))
-done
-
-speedqueue=$((ips + speedqueue_max))
-
-if [ $port -eq 443 ]; then
-  record_name="${area_GEC}"
-else
-  record_name="${area_GEC}-${port}"
-fi
-
 area_GEC0="${area_GEC^^}"
 ip_txt="ip/${area_GEC0}-${port}.txt"
 result_csv="log/${area_GEC0}-${port}.csv"
