@@ -281,66 +281,7 @@ done < ip-${port}.txt
 
 echo "IP 已按国家分类保存到 ip 文件夹内。"
 
-# 执行测速和更新 DNS 记录
+# 执行测速
 ./CloudflareST -tp $port -url $speedurl -f $ip_txt -dn $speedqueue -tl 280 -tlr $lossmax -p 0 -sl $speedlower -o $result_csv
-
-if [ "$record_count" -gt 0 ]; then
-  for record_id in "${record_identifiers[@]}"; do
-	result=$(curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records/${record_id}" \
-		 -H "X-Auth-Email: ${auth_email}" \
-		 -H "X-Auth-Key: ${auth_key}" \
-		 -H "Content-Type: application/json")
-
-	success=$(echo "${result}" | jq -r '.success')
-	if [ "${success}" == "true" ]; then
-		echo "$record_name.$zone_name 删除成功"
-	else
-		echo "$record_name.$zone_name 删除失败"
-	fi
-    sleep 1
-  done
-fi
-
-ips0=$ips
-TGtext0=""
-sed -n '2,20p' $result_csv | while read line
-do
-    attempt=0
-    
-    while [[ $attempt -lt 3 ]]; do
-	result=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${zone_identifier}/dns_records" \
-			 -H "X-Auth-Email: ${auth_email}" \
-			 -H "X-Auth-Key: ${auth_key}" \
-			 -H "Content-Type: application/json" \
-			 --data '{
-			   "type": "'${record_type}'",
-			   "name": "'${record_name}'.'${zone_name}'",
-			   "content": "'${line%%,*}'",
-			   "ttl": 60,
-			   "proxied": false
-			 }')
-
-	success=$(echo "${result}" | jq -r '.success')
-	if [ "${success}" == "true" ]; then
-	    TGtext=$record_name'.'$zone_name' 更新成功: '${line%%,*}
-	    echo $TGtext
-	    break
-	else
-	    messages=$(echo "${result}" | jq -r '.messages | join(", ")')
-	    TGtext=$record_name'.'$zone_name' 更新失败: '${messages}
-	    echo $TGtext
-	    attempt=$(( $attempt + 1 ))
-	    echo "尝试次数: $attempt, 1 分钟后将再次尝试更新..."
-	    sleep 60
-	fi
-    done
-    
-    TGtext0="$TGtext0%0A$TGtext"
-    ips=$(($ips-1))
-    if [ $ips -eq 0 ]; then
-        TGmessage "ACFST_DDNS 更新完成！%0A地区:$record_name  端口:$port $TGtext0"
-        break
-    fi
-done
 
 echo "更新完成。"
