@@ -1,0 +1,58 @@
+name: Cloudflare SpeedTest
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天运行一次
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  speedtest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Run SpeedTest Script
+      env:
+        AUTH_EMAIL: ${{ secrets.AUTH_EMAIL }}
+        AUTH_KEY: ${{ secrets.AUTH_KEY }}
+        ZONE_NAME: ${{ secrets.ZONE_NAME }}
+        AREA_GEC: hk
+        PORT: 443
+        IPS: 4
+        CFIPS: 1
+        SPEEDTEST_MB: 90
+        SPEED_LOWER: 10
+        LOSS_MAX: 0.75
+        SPEEDQUEUE_MAX: 1
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_BOT_API: ${{ secrets.TELEGRAM_BOT_API }}
+        GITHUB_ID: xj888xj
+        SPEEDURL: https://speed.cloudflare.com/__down?bytes=$((SPEEDTEST_MB * 1000000))
+        PROXYGITHUB: ${{ secrets.PROXYGITHUB }}
+        CLOUDFLAREIP_PASSWORD: ${{ secrets.CLOUDFLAREIP_PASSWORD }}
+        LOG_FILE: /github/workspace/logfile.log
+      run: |
+        chmod +x cloudflare_speedtest.sh
+        for region in hk us kr jp sg; do
+          sudo ./cloudflare_speedtest.sh "$region"
+        done
+
+    - name: Convert CSV to TXT
+      run: |
+        for region in HK SG KR US JP; do
+          python "csv2txt-$region.py"
+        done
+        
+    - uses: stefanzweifel/git-auto-commit-action@v5
+
+    - name: Upload log
+      uses: actions/upload-artifact@v2
+      with:
+        name: speedtest-log
+        path: logfile.log
