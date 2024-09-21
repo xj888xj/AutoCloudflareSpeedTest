@@ -141,7 +141,7 @@ jobs:
         delete_dns_records(subdomain)
 
         # 定义文件URL和保存路径
-        url = "https://raw.githubusercontent.com/xj888xj/AutoCloudflareSpeedTest/main/log/result-ip.csv"
+        url = "https://raw.githubusercontent.com/xj888xj/AutoCloudflareSpeedTest/main/log/US-443.csv"
         save_path = "bestip.csv"
 
         # 下载IP地址列表
