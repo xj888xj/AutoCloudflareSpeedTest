@@ -103,4 +103,4 @@ if ! python3 -c "import requests" &> /dev/null; then
 fi
 
 # Run CloudflareST
-sudo ./CloudflareST -tp 443 -url https://speed.cloudflare.com/__down?bytes=10000000 -dn 10 -tl 280 -tll 20 -tlr 0.75 -sl 5 -f ip.txt -o log/result-ip.csv
+sudo ./CloudflareST -tp 443 -dd -url https://speed.cloudflare.com/__down?bytes=10000000 -dn 10 -tl 450 -tll 40 -tlr 0.75 -sl 5 -f ip.txt -o log/result-ip.csv
